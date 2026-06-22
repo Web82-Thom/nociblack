@@ -63,8 +63,8 @@ rôle et son état d'activation.
 | `id` | UUID | Oui | Clé primaire et référence vers `auth.users.id` |
 | `email` | Texte | Oui | Minuscules, normalisée et unique sans tenir compte de la casse |
 | `role` | Rôle administratif | Oui | `ADMIN` par défaut ; élévation contrôlée |
-| `first_name` | Texte | Oui | Valeur non vide |
-| `last_name` | Texte | Oui | Valeur non vide |
+| `first_name` | Texte | Non | Valeur non vide |
+| `last_name` | Texte | Non | Valeur non vide |
 | `is_active` | Booléen | Oui | `true` par défaut |
 | `created_at` | Date/heure avec fuseau | Oui | Affectée à la création |
 | `updated_at` | Date/heure avec fuseau | Oui | Actualisée à chaque modification |
