@@ -13,8 +13,9 @@ L'application permet aux administrateurs de gérer :
 * Les images des articles
 * La publication du catalogue
 
-Le schéma de données est hébergé sur Supabase. La connexion de l'application et
-les politiques RLS (Row Level Security) seront ajoutées dans les prochaines étapes.
+Le schéma de données et les politiques RLS (Row Level Security) sont déployés sur
+Supabase. La connexion de l'application et la configuration Storage constituent
+les prochaines étapes.
 
 ---
 
@@ -182,12 +183,13 @@ Limites :
 
 ## Sécurité
 
-La sécurité reposera principalement sur les politiques Supabase RLS dédiées.
+La sécurité repose principalement sur les politiques Supabase RLS dédiées et
+testées pour les rôles `ADMIN` et `SUPER_ADMIN`.
 
 Le client Flutter n'est jamais considéré comme une source de confiance.
 
-Les contraintes métier critiques déjà disponibles sont validées côté base de
-données. Les autorisations seront ajoutées par la migration RLS.
+Les contraintes métier critiques et les autorisations sont validées côté base de
+données. Un administrateur désactivé perd immédiatement ses droits privés.
 
 ---
 

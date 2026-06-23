@@ -27,7 +27,7 @@ apps/nociblack_admin
 apps/nociblack_web
 ```
 
-consomment les données via Supabase.
+consommeront les données via Supabase après leur connexion au backend.
 
 ---
 
@@ -38,10 +38,13 @@ supabase/
 ├── .gitignore
 ├── config.toml
 ├── migrations/
-│   └── 20260623112454_create_initial_schema.sql
+│   ├── 20260623112454_create_initial_schema.sql
+│   └── 20260623124112_create_rls_policies.sql
 ├── tests/
 │   └── database/
-│       └── initial_schema_test.sql
+│       ├── initial_schema_test.sql
+│       ├── public_rls_test.sql
+│       └── admin_rls_test.sql
 ├── seed.sql           # Futur : uniquement après validation d'un jeu de données
 └── README.md
 ```
@@ -200,9 +203,12 @@ item_images.item_id
 
 ## Sécurité
 
-La RLS est activée sur les quatre tables publiques. La migration initiale ne crée
-volontairement aucune politique : les accès clients restent donc refusés par
-défaut jusqu'à l'application de la migration RLS dédiée.
+La RLS est activée sur les quatre tables publiques. Les politiques déployées
+séparent les accès `anon`, `ADMIN` et `SUPER_ADMIN`. Un administrateur désactivé
+perd immédiatement tous ses droits privés.
+
+Les inscriptions Auth publiques sont désactivées. Les comptes administratifs sont
+créés manuellement depuis le tableau de bord Supabase.
 
 Principe fondamental :
 
@@ -214,10 +220,9 @@ Toutes les autorisations sont vérifiées directement par PostgreSQL.
 
 ---
 
-## Politiques RLS cibles
+## Politiques RLS
 
-Les droits ci-dessous sont validés fonctionnellement mais ne sont pas encore
-déployés. Ils seront implémentés et testés dans une migration séparée.
+Les droits ci-dessous sont déployés et validés sur le projet Supabase hébergé.
 
 ### Public
 
@@ -265,9 +270,11 @@ Gérer l'ensemble des données
 
 ---
 
-## Storage
+## Storage cible
 
-### Bucket item-images
+Les buckets et leurs politiques seront créés dans la prochaine migration.
+
+### Bucket prévu `item-images`
 
 Utilisé pour :
 
@@ -295,7 +302,7 @@ Format recommandé : WebP
 
 ---
 
-### Bucket brand-assets
+### Bucket prévu `brand-assets`
 
 Utilisé pour :
 
@@ -346,17 +353,23 @@ Analyse
 → Commit Git
 ```
 
-### Test du schéma initial
+### Tests de la base de données
 
-Le test de régression se trouve dans :
+Les tests de régression se trouvent dans :
 
 ```text
-supabase/tests/database/initial_schema_test.sql
+supabase/tests/database/
+├── initial_schema_test.sql
+├── public_rls_test.sql
+└── admin_rls_test.sql
 ```
 
 Sans environnement Docker local, il est exécuté intégralement depuis le SQL Editor
 Supabase. Il ouvre une transaction, contrôle les règles du schéma et termine par
 `rollback;` afin de ne conserver aucune donnée de test.
+
+Le test administrateur nécessite au moins un profil `SUPER_ADMIN` actif et un
+profil `ADMIN` actif. Aucun UUID ni mot de passe n'est enregistré dans Git.
 
 Résultat attendu :
 
@@ -371,7 +384,7 @@ Success. No rows returned
 Phase :
 
 ```text
-Schéma PostgreSQL V1 initial appliqué et validé
+Schéma PostgreSQL et politiques RLS V1 appliqués et validés
 ```
 
 Terminé :
@@ -382,18 +395,20 @@ Installation de la CLI Supabase
 Initialisation de la configuration du dépôt
 Liaison avec le projet Supabase hébergé
 Création et application de la migration initiale du schéma
-Activation sécurisée de la RLS sans politique
+Création et application de la migration RLS
+Création des profils SUPER_ADMIN et ADMIN
+Désactivation des inscriptions Auth publiques
 Validation du schéma avec Supabase DB lint
 Validation du test SQL de régression transactionnel
+Validation des accès public, ADMIN, SUPER_ADMIN et administrateur désactivé
 ```
 
 À venir :
 
 ```text
-Création des politiques RLS
 Création des buckets Storage
 Création des politiques Storage
-Tests Auth et RLS des profils administratifs
+Connexion de Flutter et React à Supabase
 ```
 
 ---

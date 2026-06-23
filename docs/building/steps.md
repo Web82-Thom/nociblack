@@ -27,11 +27,14 @@
 - [x] Créer et appliquer la migration PostgreSQL initiale
 - [x] Valider le schéma distant avec Supabase DB lint
 - [x] Créer et valider le test SQL du schéma initial
-
+- [x] Créer et appliquer la migration des politiques RLS
+- [x] Créer les profils SUPER_ADMIN et ADMIN
+- [x] Désactiver les inscriptions Auth publiques
+- [x] Valider les accès RLS public, ADMIN et SUPER_ADMIN
+- [x] Valider la révocation des droits d’un administrateur désactivé
 
 ## À venir
 
-- [ ] Configurer les politiques RLS
 - [ ] Configurer les buckets et politiques Storage
 - [ ] Connecter Flutter à Supabase
 - [ ] Connecter React à Supabase
@@ -47,10 +50,13 @@ supabase db push
 supabase db lint --linked --level warning
 ```
 
-Le test transactionnel du schéma initial est exécuté dans le SQL Editor Supabase :
+Les tests transactionnels sont exécutés dans le SQL Editor Supabase :
 
 ```text
-supabase/tests/database/initial_schema_test.sql
+supabase/tests/database/
+├── initial_schema_test.sql
+├── public_rls_test.sql
+└── admin_rls_test.sql
 ```
 
 ## Commandes Web

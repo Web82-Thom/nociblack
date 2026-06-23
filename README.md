@@ -77,9 +77,10 @@ Services retenus pour la V1 :
 * Row Level Security (RLS)
 * Storage
 
-État actuel : le schéma PostgreSQL initial est appliqué sur le projet hébergé et
-validé par un test SQL transactionnel. Les politiques RLS et Storage restent à
-implémenter dans des migrations séparées.
+État actuel : le schéma PostgreSQL et les politiques RLS sont appliqués sur le
+projet hébergé. Les accès public, `ADMIN`, `SUPER_ADMIN` et administrateur
+désactivé sont validés par des tests SQL transactionnels. Storage et la connexion
+des applications restent à implémenter.
 
 ---
 

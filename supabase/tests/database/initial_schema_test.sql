@@ -30,15 +30,6 @@ begin
     raise exception 'TEST FAILED: RLS is not enabled on every public table';
   end if;
 
-  if exists (
-    select 1
-      from pg_policies
-     where schemaname = 'public'
-       and tablename = any (array['profiles', 'categories', 'items', 'item_images'])
-  ) then
-    raise exception 'TEST FAILED: migration 1 must not create RLS policies';
-  end if;
-
   ---------------------------------------------------------------------------
   -- Nominal path and normalization
   ---------------------------------------------------------------------------
