@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../home/presentation/pages/admin_home_page.dart';
+import '../../../home/presentation/pages/admin_dashboard_page.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../controllers/auth_controller.dart';
 import 'login_page.dart';
@@ -41,7 +41,7 @@ final class _AuthGateState extends State<AuthGate> {
           AuthenticationStatus.unauthenticated => LoginPage(
             controller: _controller,
           ),
-          AuthenticationStatus.authenticated => AdminHomePage(
+          AuthenticationStatus.authenticated => AdminDashboardPage(
             profile: _controller.profile!,
             onSignOut: _controller.signOut,
           ),

@@ -81,10 +81,18 @@ lib/
 │   │   ├── data/
 │   │   ├── domain/
 │   │   └── presentation/
-│   └── home/
+│   ├── home/
+│   │   └── presentation/
+│   │       ├── pages/
+│   │       │   └── admin_dashboard_page.dart
+│   │       └── widgets/
+│   │           └── dashboard_action_card.dart
+│   └── items/
 │       └── presentation/
 │           └── pages/
-│               └── admin_home_page.dart
+│               ├── item_form_page.dart
+│               ├── items_histories_page.dart
+│               └── items_list_page.dart
 └── main.dart
 ```
 
@@ -258,11 +266,13 @@ Terminé :
 * Validation du profil actif `ADMIN` ou `SUPER_ADMIN`
 * Restauration de session et déconnexion
 * Intégration de l'autoremplissage Android
-* Analyse statique et 15 tests automatisés
+* Tableau de bord Admin et navigation vers les écrans provisoires du catalogue
+* Analyse statique et 18 tests automatisés
 
 À venir :
 
 * Repositories du catalogue
+* Connexion des écrans Articles, Nouvel article et Historique aux données Supabase
 * Tests des mutations via l'API Supabase Storage
 
 ---
