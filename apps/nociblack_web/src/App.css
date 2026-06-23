@@ -1,0 +1,23 @@
+.app-shell {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 2rem;
+}
+
+.app-intro {
+  text-align: center;
+}
+
+.app-intro h1 {
+  margin: 0;
+  color: var(--color-gold);
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  letter-spacing: 0.08em;
+}
+
+.app-intro p {
+  margin: 1rem 0 0;
+  color: var(--color-white);
+  font-size: 1rem;
+}
