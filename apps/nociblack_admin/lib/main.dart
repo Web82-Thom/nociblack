@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
-void main() {
+import 'core/config/app_environment.dart';
+import 'core/supabase/supabase_initializer.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final environment = AppEnvironment.fromEnvironment();
+  await const SupabaseInitializer().initialize(environment);
+
   runApp(const NociBlackAdminApp());
 }
 
@@ -12,9 +20,7 @@ class NociBlackAdminApp extends StatelessWidget {
     return MaterialApp(
       title: 'NociBlacK Admin',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.black),
-      ),
+      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.black)),
       home: const AdminHomePage(),
     );
   }
