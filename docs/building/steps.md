@@ -36,10 +36,20 @@
 - [x] Configurer les buckets `item-images` et `brand-assets`
 - [x] Configurer les politiques RLS Storage
 - [x] Valider les accès Storage public, ADMIN et SUPER_ADMIN
+- [x] Installer le SDK Supabase Flutter
+- [x] Configurer l'environnement Flutter local non versionné
+- [x] Initialiser Supabase avant le lancement de l'application Flutter
+- [x] Configurer l'accès réseau Android
+- [x] Structurer l'application racine, le thème et la page d'accueil Admin
+- [x] Valider le démarrage Android avec Supabase
+- [x] Valider l'analyse statique et les 5 tests Flutter
 
 ## À venir
 
-- [ ] Connecter Flutter à Supabase
+- [ ] Implémenter l'authentification Flutter Admin
+- [ ] Valider la session et le profil `ADMIN` ou `SUPER_ADMIN`
+- [ ] Connecter les repositories Flutter au catalogue
+- [ ] Tester les mutations Storage depuis l'application Flutter
 - [ ] Connecter React à Supabase
 
 ## Commandes Supabase
@@ -61,6 +71,17 @@ supabase/tests/database/
 ├── public_rls_test.sql
 ├── admin_rls_test.sql
 └── storage_rls_test.sql
+```
+
+## Commandes Flutter Admin
+
+```powershell
+Set-Location .\apps\nociblack_admin
+flutter pub get
+dart format lib test
+flutter analyze
+flutter test
+flutter run --dart-define-from-file=config/development.json
 ```
 
 ## Commandes Web

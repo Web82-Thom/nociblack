@@ -389,7 +389,7 @@ Success. No rows returned
 Phase :
 
 ```text
-Schéma PostgreSQL, politiques RLS et Storage V1 appliqués et validés
+Backend V1 validé et SDK Supabase Flutter Admin initialisé
 ```
 
 Terminé :
@@ -408,12 +408,15 @@ Désactivation des inscriptions Auth publiques
 Validation du schéma avec Supabase DB lint
 Validation du test SQL de régression transactionnel
 Validation des accès public, ADMIN, SUPER_ADMIN et administrateur désactivé
+Initialisation du SDK Supabase dans l'application Flutter Admin
+Validation du démarrage Android et des tests Flutter
 ```
 
 À venir :
 
 ```text
-Connexion de Flutter et React à Supabase
+Authentification et repositories catalogue de l'application Flutter Admin
+Connexion de l'application React à Supabase
 ```
 
 ---
