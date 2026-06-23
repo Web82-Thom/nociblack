@@ -41,28 +41,41 @@ Les données sont récupérées depuis Supabase.
 
 ## Architecture
 
-Le projet suit une architecture modulaire orientée fonctionnalités.
+Le projet suit une architecture modulaire orientée fonctionnalités et couches.
+La référence complète est disponible dans
+[`docs/web/01-web-architecture.md`](../../docs/web/01-web-architecture.md).
 
 ```text
 src/
+├── app/
+│   ├── providers/
+│   └── router/
 ├── core/
-├── shared/
+│   ├── config/
+│   ├── errors/
+│   └── supabase/
 ├── features/
 │   ├── home/
 │   ├── catalog/
-│   ├── category/
-│   └── product/
-├── components/
-├── layouts/
-└── routes/
+│   ├── categories/
+│   ├── items/
+│   └── contact/
+├── shared/
+│   ├── components/
+│   ├── layouts/
+│   ├── hooks/
+│   └── styles/
+└── main.tsx
 ```
 
 Principes :
 
-* Separation of Concerns
-* Composants réutilisables
-* Services isolés
-* Architecture évolutive
+* composants React fonctionnels ;
+* POO pour les entités, repositories, cas d'usage, services et mappers ;
+* aucune requête Supabase dans les composants ;
+* composants réutilisables et styles isolés ;
+* aucun fichier supérieur à 500 lignes ;
+* architecture créée progressivement selon les besoins réels.
 
 ---
 
@@ -73,6 +86,9 @@ Principes :
 * React
 * TypeScript
 * Vite
+* React Router
+* TanStack Query
+* CSS Modules
 
 ### Backend
 
@@ -123,12 +139,18 @@ Objectifs :
 Exemples :
 
 ```text
-/categorie/parfums
+/catalogue
 
-/article/dior-sauvage-edp
+/categories/parfums
 
-/article/nike-air-max-90
+/articles/dior-sauvage-edp
+
+/articles/nike-air-max-90
 ```
+
+La V1 est une SPA statique adaptée à IONOS. Cette contrainte limite le SEO par
+rapport à un rendu serveur et devra être réévaluée si le référencement devient
+prioritaire.
 
 ---
 
@@ -150,6 +172,12 @@ Installation :
 
 ```bash
 npm install
+```
+
+Validation du code :
+
+```bash
+npm run lint
 ```
 
 Lancement :

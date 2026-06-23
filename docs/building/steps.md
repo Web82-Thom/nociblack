@@ -14,10 +14,12 @@
 - [x] Validation ESLint
 - [x] Validation du build Vite
 - [x] Validation visuelle du socle Web
+- [x] Validation de l’architecture Web
+- [x] Documentation de l’architecture Web
 
 ## En cours
 
-- [ ] Valider l’architecture Web
+- [ ] Mettre en place l’arborescence Web validée
 
 ## À venir
 
