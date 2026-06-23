@@ -251,6 +251,17 @@ prérendu, le rendu serveur ou l'hébergement.
 
 ## 16. Qualité et validation
 
+L'environnement de tests Web repose sur :
+
+- Vitest pour l'exécution des tests ;
+- Testing Library pour tester les composants selon leur comportement visible ;
+- `jest-dom` pour les assertions DOM lisibles ;
+- `user-event` pour simuler les interactions utilisateur ;
+- jsdom pour fournir l'environnement navigateur des tests.
+
+Les tests sont exécutés une fois avec `npm test` ou en surveillance avec
+`npm run test:watch`.
+
 Chaque évolution Web suit le cycle :
 
 1. analyse ;

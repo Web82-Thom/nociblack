@@ -1,0 +1,56 @@
+.shell {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 2rem;
+}
+
+.content {
+  width: min(100%, 36rem);
+  text-align: center;
+}
+
+.code {
+  margin: 0;
+  color: var(--color-gold);
+  font-size: clamp(4rem, 15vw, 8rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.title {
+  margin: 1.5rem 0 0;
+  color: var(--color-white);
+  font-size: clamp(2rem, 6vw, 3rem);
+}
+
+.description {
+  margin: 1rem 0 0;
+  color: var(--color-white);
+  font-size: 1rem;
+}
+
+.link {
+  display: inline-flex;
+  margin-top: 2rem;
+  border: 1px solid var(--color-gold);
+  border-radius: 0.25rem;
+  padding: 0.75rem 1.5rem;
+  color: var(--color-black);
+  background-color: var(--color-gold);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.link:hover {
+  color: var(--color-gold);
+  background-color: transparent;
+}
+
+.link:focus-visible {
+  outline: 3px solid var(--color-white);
+  outline-offset: 3px;
+}

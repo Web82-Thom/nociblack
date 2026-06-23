@@ -102,6 +102,12 @@ Principes :
 
 * Supabase Storage
 
+### Tests
+
+* Vitest
+* Testing Library
+* jsdom
+
 ---
 
 ## Visibilité des données
@@ -178,6 +184,18 @@ Validation du code :
 
 ```bash
 npm run lint
+```
+
+Tests automatisés :
+
+```bash
+npm test
+```
+
+Tests en surveillance :
+
+```bash
+npm run test:watch
 ```
 
 Lancement :

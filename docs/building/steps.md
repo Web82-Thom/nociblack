@@ -16,10 +16,12 @@
 - [x] Validation visuelle du socle Web
 - [x] Validation de l’architecture Web
 - [x] Documentation de l’architecture Web
+- [x] Mise en place du socle initial de l’arborescence Web
+- [x] Mise en place initiale du routeur Web
+- [x] Création de la page 404
+- [x] Configuration de Vitest et Testing Library
+- [x] Tests automatisés du routeur
 
-## En cours
-
-- [ ] Mettre en place l’arborescence Web validée
 
 ## À venir
 
@@ -37,4 +39,5 @@ npm install
 npm run lint
 npm run build
 npm run dev
+npm test
 ```
