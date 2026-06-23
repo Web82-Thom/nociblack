@@ -52,7 +52,7 @@ Un article est visible sur le site public uniquement lorsque :
 - son statut est `PUBLISHED` ;
 - sa catégorie est active.
 
-Le passage au statut `PUBLISHED` devra être refusé si les données obligatoires sont
+Le passage au statut `PUBLISHED` est refusé si les données obligatoires sont
 invalides, si la catégorie est inactive ou si aucune image n'est associée à l'article.
 
 ### Stock
@@ -67,7 +67,7 @@ invalides, si la catégorie est inactive ou si aucune image n'est associée à l
 - Un article archivé possède le statut `ARCHIVED`.
 - Un article archivé n'est jamais visible publiquement.
 - Il reste consultable dans l'application Admin.
-- La restauration d'une archive devra repasser par `DRAFT` avant publication.
+- La restauration d'une archive repasse obligatoirement par `DRAFT` avant publication.
 
 ## 6. Images d'article
 
@@ -76,6 +76,7 @@ invalides, si la catégorie est inactive ou si aucune image n'est associée à l
 - Les positions autorisées vont de 1 à 3.
 - Une position est unique dans un même article.
 - Une seule image peut être principale.
+- Un article publié possède exactement une image principale.
 - Une image ne peut appartenir qu'à un seul article.
 - Les images publiques suivent les règles de visibilité de leur article.
 - Le format cible est WebP et la taille maximale est de 2 Mo.
@@ -123,7 +124,8 @@ Les décisions suivantes sont définitives pour la V1 :
 1. la colonne `image_url` est conservée et contient une référence Storage stable,
    jamais une URL signée temporaire ;
 2. un article publié avec un stock nul reste visible et apparaît comme indisponible ;
-3. au moins une image est obligatoire avant la publication d'un article ;
+3. entre une et trois images, dont exactement une image principale, sont
+   obligatoires avant la publication d'un article ;
 4. les noms conservent leur casse d'affichage, mais leur unicité ignore la casse ;
 5. les slugs et emails sont normalisés en minuscules, les SKU en majuscules, et leur
    unicité ignore la casse ;
@@ -131,4 +133,5 @@ Les décisions suivantes sont définitives pour la V1 :
    Supabase en V1, sans clé privilégiée dans l'application Flutter ;
 7. le retrait d'une image supprime physiquement le fichier Storage correspondant.
 
-Ces décisions servent de référence à la conception des futures migrations SQL.
+Ces décisions servent de référence à la conception et au contrôle des migrations
+SQL.

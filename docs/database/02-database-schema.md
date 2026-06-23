@@ -49,9 +49,8 @@ Valeurs autorisées :
 - `PUBLISHED`
 - `ARCHIVED`
 
-Ces ensembles fermés devront être représentés par des types PostgreSQL adaptés ou
-par des contraintes équivalentes. Le choix technique sera réalisé lors de la
-conception des migrations.
+Ces ensembles fermés sont représentés par les types PostgreSQL `admin_role` et
+`item_status`.
 
 ## 4. Table `profiles`
 
@@ -151,11 +150,12 @@ Contraintes fonctionnelles :
 - une position ne peut être utilisée qu'une fois pour un même article ;
 - une image appartient à un seul article.
 
-La future migration devra faire respecter ces règles en base de données. Elles ne
-doivent pas dépendre uniquement de contrôles Flutter.
+La migration du schéma fait respecter ces règles en base de données. Elles ne
+dépendent pas uniquement de contrôles Flutter.
 
-Un article doit posséder au moins une image pour passer au statut `PUBLISHED`.
-Cette règle porte sur plusieurs tables et devra être garantie côté base de données.
+Un article doit posséder entre une et trois images et exactement une image
+principale pour passer au statut `PUBLISHED`. Cette règle porte sur plusieurs
+tables et est garantie côté base de données.
 
 ### Interprétation de `image_url`
 

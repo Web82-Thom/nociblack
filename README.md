@@ -13,9 +13,13 @@ NOCIBLACK/
 │   └── nociblack_web/
 │
 ├── docs/
-│   └── database/
+│   ├── building/
+│   ├── database/
+│   └── web/
 │
 ├── supabase/
+│   ├── migrations/
+│   └── tests/database/
 │
 ├── .github/
 ├── .agents/
@@ -66,12 +70,16 @@ Fonctionnalités prévues :
 
 Supabase constitue le backend principal.
 
-Services utilisés :
+Services retenus pour la V1 :
 
 * PostgreSQL
 * Authentication
 * Row Level Security (RLS)
 * Storage
+
+État actuel : le schéma PostgreSQL initial est appliqué sur le projet hébergé et
+validé par un test SQL transactionnel. Les politiques RLS et Storage restent à
+implémenter dans des migrations séparées.
 
 ---
 

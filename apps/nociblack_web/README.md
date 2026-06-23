@@ -12,7 +12,8 @@ Le site est responsive et accessible depuis :
 * Tablette
 * Desktop
 
-Les données sont récupérées depuis Supabase.
+Les données seront récupérées depuis Supabase après la mise en place des politiques
+RLS publiques et du client Web.
 
 ---
 
@@ -129,7 +130,8 @@ Profils administrateurs
 Données privées
 ```
 
-Toutes les restrictions sont appliquées par les politiques RLS Supabase.
+Toutes ces restrictions seront appliquées par les politiques RLS Supabase avant la
+connexion du site au catalogue.
 
 ---
 

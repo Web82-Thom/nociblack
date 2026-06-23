@@ -37,8 +37,12 @@ consomment les données via Supabase.
 supabase/
 ├── .gitignore
 ├── config.toml
-├── migrations/        # Créé lors de la première migration
-├── seed.sql           # Ajouté uniquement lorsqu'un jeu de données est validé
+├── migrations/
+│   └── 20260623112454_create_initial_schema.sql
+├── tests/
+│   └── database/
+│       └── initial_schema_test.sql
+├── seed.sql           # Futur : uniquement après validation d'un jeu de données
 └── README.md
 ```
 
@@ -86,6 +90,19 @@ supabase db reset
 
 La CLI est utilisée pour gérer la liaison, les migrations et les opérations sur le
 projet distant. Toute migration doit être relue avant son exécution.
+
+Commandes de contrôle et de déploiement depuis la racine du dépôt :
+
+```powershell
+supabase migration list --linked
+supabase db push --dry-run --linked
+supabase db push
+supabase db lint --linked --level warning
+```
+
+Le `dry-run` doit toujours précéder un `db push`. L'avertissement relatif à Docker
+et au cache `pg-delta` n'empêche pas l'application d'une migration sur le projet
+hébergé.
 
 ---
 
@@ -183,7 +200,9 @@ item_images.item_id
 
 ## Sécurité
 
-La sécurité est assurée par les politiques RLS.
+La RLS est activée sur les quatre tables publiques. La migration initiale ne crée
+volontairement aucune politique : les accès clients restent donc refusés par
+défaut jusqu'à l'application de la migration RLS dédiée.
 
 Principe fondamental :
 
@@ -195,7 +214,10 @@ Toutes les autorisations sont vérifiées directement par PostgreSQL.
 
 ---
 
-## Politiques RLS
+## Politiques RLS cibles
+
+Les droits ci-dessous sont validés fonctionnellement mais ne sont pas encore
+déployés. Ils seront implémentés et testés dans une migration séparée.
 
 ### Public
 
@@ -324,6 +346,24 @@ Analyse
 → Commit Git
 ```
 
+### Test du schéma initial
+
+Le test de régression se trouve dans :
+
+```text
+supabase/tests/database/initial_schema_test.sql
+```
+
+Sans environnement Docker local, il est exécuté intégralement depuis le SQL Editor
+Supabase. Il ouvre une transaction, contrôle les règles du schéma et termine par
+`rollback;` afin de ne conserver aucune donnée de test.
+
+Résultat attendu :
+
+```text
+Success. No rows returned
+```
+
 ---
 
 ## État actuel
@@ -331,7 +371,7 @@ Analyse
 Phase :
 
 ```text
-Configuration Supabase initialisée et projet hébergé lié
+Schéma PostgreSQL V1 initial appliqué et validé
 ```
 
 Terminé :
@@ -341,17 +381,20 @@ Création du projet Supabase
 Installation de la CLI Supabase
 Initialisation de la configuration du dépôt
 Liaison avec le projet Supabase hébergé
+Création et application de la migration initiale du schéma
+Activation sécurisée de la RLS sans politique
+Validation du schéma avec Supabase DB lint
+Validation du test SQL de régression transactionnel
 ```
 
 À venir :
 
 ```text
-Création des migrations
 Création des politiques RLS
 Création des buckets Storage
+Création des politiques Storage
+Tests Auth et RLS des profils administratifs
 ```
-
-Aucune migration SQL n'est encore considérée comme définitive tant qu'elle n'a pas été validée.
 
 ---
 

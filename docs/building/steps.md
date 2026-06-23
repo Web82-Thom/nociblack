@@ -24,14 +24,34 @@
 - [x] Installer la CLI Supabase
 - [x] Initialiser la configuration Supabase du dépôt
 - [x] Lier le dépôt au projet Supabase hébergé
+- [x] Créer et appliquer la migration PostgreSQL initiale
+- [x] Valider le schéma distant avec Supabase DB lint
+- [x] Créer et valider le test SQL du schéma initial
 
 
 ## À venir
 
-- [ ] Préparer les migrations PostgreSQL
 - [ ] Configurer les politiques RLS
+- [ ] Configurer les buckets et politiques Storage
 - [ ] Connecter Flutter à Supabase
 - [ ] Connecter React à Supabase
+
+## Commandes Supabase
+
+Depuis la racine du dépôt :
+
+```powershell
+supabase migration list --linked
+supabase db push --dry-run --linked
+supabase db push
+supabase db lint --linked --level warning
+```
+
+Le test transactionnel du schéma initial est exécuté dans le SQL Editor Supabase :
+
+```text
+supabase/tests/database/initial_schema_test.sql
+```
 
 ## Commandes Web
 
