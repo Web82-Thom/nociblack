@@ -389,7 +389,7 @@ Success. No rows returned
 Phase :
 
 ```text
-Backend V1 validé et SDK Supabase Flutter Admin initialisé
+Backend V1 validé et authentification Flutter Admin intégrée
 ```
 
 Terminé :
@@ -410,12 +410,14 @@ Validation du test SQL de régression transactionnel
 Validation des accès public, ADMIN, SUPER_ADMIN et administrateur désactivé
 Initialisation du SDK Supabase dans l'application Flutter Admin
 Validation du démarrage Android et des tests Flutter
+Authentification des profils ADMIN et SUPER_ADMIN actifs
+Validation de la restauration de session et de la déconnexion
 ```
 
 À venir :
 
 ```text
-Authentification et repositories catalogue de l'application Flutter Admin
+Repositories catalogue de l'application Flutter Admin
 Connexion de l'application React à Supabase
 ```
 

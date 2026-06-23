@@ -42,12 +42,14 @@
 - [x] Configurer l'accès réseau Android
 - [x] Structurer l'application racine, le thème et la page d'accueil Admin
 - [x] Valider le démarrage Android avec Supabase
-- [x] Valider l'analyse statique et les 5 tests Flutter
+- [x] Implémenter l'authentification Flutter Admin
+- [x] Valider la session et le profil `ADMIN` ou `SUPER_ADMIN`
+- [x] Gérer la restauration de session et la déconnexion
+- [x] Intégrer l'autoremplissage Android du formulaire
+- [x] Valider l'analyse statique et les 15 tests Flutter
 
 ## À venir
 
-- [ ] Implémenter l'authentification Flutter Admin
-- [ ] Valider la session et le profil `ADMIN` ou `SUPER_ADMIN`
 - [ ] Connecter les repositories Flutter au catalogue
 - [ ] Tester les mutations Storage depuis l'application Flutter
 - [ ] Connecter React à Supabase

@@ -33,6 +33,16 @@ void main() {
       );
     });
 
+    test('rejects a Dashboard URL instead of the project API root', () {
+      expect(
+        () => AppEnvironment.fromValues(
+          supabaseUrl: 'https://supabase.com/dashboard/project/project-ref',
+          supabasePublishableKey: 'sb_publishable_test',
+        ),
+        throwsA(isA<StateError>()),
+      );
+    });
+
     test('rejects an empty publishable key', () {
       expect(
         () => AppEnvironment.fromValues(

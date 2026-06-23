@@ -14,9 +14,8 @@ L'application permet aux administrateurs de gérer :
 * La publication du catalogue
 
 Le schéma de données, les politiques RLS et Storage sont déployés sur Supabase.
-Le SDK Supabase est initialisé dans l'application et son démarrage Android a été
-validé. L'authentification et les repositories du catalogue constituent les
-prochaines étapes.
+Le SDK Supabase et l'authentification administrative sont intégrés et validés
+sur Android. Les repositories du catalogue constituent la prochaine étape.
 
 ---
 
@@ -78,6 +77,10 @@ lib/
 │   └── supabase/
 │       └── supabase_initializer.dart
 ├── features/
+│   ├── auth/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
 │   └── home/
 │       └── presentation/
 │           └── pages/
@@ -236,8 +239,9 @@ flutter analyze
 flutter test
 ```
 
-Le socle actuel compte cinq tests : quatre tests de configuration et un test de
-widget. Le démarrage Android avec initialisation Supabase a également été validé.
+Le socle actuel compte quinze tests couvrant la configuration, le domaine
+Auth, le contrôleur de session et les transitions de widgets. Le démarrage
+Android avec connexion et déconnexion Supabase a également été validé.
 
 ---
 
@@ -250,12 +254,14 @@ Terminé :
 * Configuration Android de l'accès réseau
 * Extraction de l'application racine, du thème et de la page d'accueil
 * Validation manuelle du démarrage Android
-* Analyse statique et tests automatisés
+* Authentification par e-mail et mot de passe
+* Validation du profil actif `ADMIN` ou `SUPER_ADMIN`
+* Restauration de session et déconnexion
+* Intégration de l'autoremplissage Android
+* Analyse statique et 15 tests automatisés
 
 À venir :
 
-* Authentification des administrateurs
-* Contrôle de session et du profil `ADMIN` ou `SUPER_ADMIN`
 * Repositories du catalogue
 * Tests des mutations via l'API Supabase Storage
 

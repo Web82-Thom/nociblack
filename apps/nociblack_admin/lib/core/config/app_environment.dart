@@ -30,8 +30,13 @@ final class AppEnvironment {
 
     if (parsedUrl == null ||
         parsedUrl.scheme != 'https' ||
-        parsedUrl.host.isEmpty) {
-      throw StateError('SUPABASE_URL doit contenir une URL HTTPS valide.');
+        parsedUrl.host.isEmpty ||
+        (parsedUrl.path.isNotEmpty && parsedUrl.path != '/') ||
+        parsedUrl.hasQuery ||
+        parsedUrl.hasFragment) {
+      throw StateError(
+        'SUPABASE_URL doit contenir l’URL HTTPS racine du projet Supabase.',
+      );
     }
 
     if (normalizedKey.isEmpty) {

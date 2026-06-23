@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../features/home/presentation/pages/admin_home_page.dart';
+import '../features/auth/domain/repositories/auth_repository.dart';
+import '../features/auth/presentation/pages/auth_gate.dart';
 import 'theme/app_theme.dart';
 
 /// Widget racine de l’application NociBlacK Admin.
 final class NociBlackAdminApp extends StatelessWidget {
-  const NociBlackAdminApp({super.key});
+  const NociBlackAdminApp({required this.authRepository, super.key});
+
+  final AuthRepository authRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +16,7 @@ final class NociBlackAdminApp extends StatelessWidget {
       title: 'NociBlacK Admin',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      home: const AdminHomePage(),
+      home: AuthGate(authRepository: authRepository),
     );
   }
 }
