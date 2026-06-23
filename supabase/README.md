@@ -10,7 +10,7 @@ Ce dossier contient toute la configuration liée à Supabase :
 * Stockage des médias
 * Migrations
 * Fonctions SQL
-* Configuration locale et production
+* Configuration versionnée de la CLI Supabase
 
 ---
 
@@ -35,13 +35,57 @@ consomment les données via Supabase.
 
 ```text
 supabase/
-├── migrations/
-├── seed/
-├── functions/
-├── storage/
-├── policies/
+├── .gitignore
+├── config.toml
+├── migrations/        # Créé lors de la première migration
+├── seed.sql           # Ajouté uniquement lorsqu'un jeu de données est validé
 └── README.md
 ```
+
+Les tables, fonctions, contraintes, politiques RLS et configurations Storage sont
+versionnées dans les migrations SQL. Aucun dossier artificiel `policies/`,
+`storage/` ou `functions/` n'est créé sans besoin réel.
+
+---
+
+## CLI et projet hébergé
+
+Version de la CLI validée :
+
+```text
+Supabase CLI 2.107.0
+```
+
+La configuration du dépôt est initialisée et liée au projet Supabase hébergé.
+La liaison locale est conservée dans `supabase/.temp/`, dossier ignoré par Git.
+
+Commandes principales depuis la racine du dépôt :
+
+```powershell
+supabase login
+supabase projects list
+supabase link --project-ref <REFERENCE_ID>
+```
+
+Le token d'accès, le mot de passe PostgreSQL et la clé `service_role` ne doivent
+jamais être ajoutés au dépôt, aux fichiers `.env` versionnés ou à la documentation.
+
+---
+
+## Pas d'environnement local Docker
+
+La V1 utilise directement le projet Supabase hébergé.
+
+Les commandes suivantes ne font pas partie du workflow actuel :
+
+```text
+supabase start
+supabase stop
+supabase db reset
+```
+
+La CLI est utilisée pour gérer la liaison, les migrations et les opérations sur le
+projet distant. Toute migration doit être relue avant son exécution.
 
 ---
 
@@ -287,13 +331,21 @@ Analyse
 Phase :
 
 ```text
-Conception V1 validée
+Configuration Supabase initialisée et projet hébergé lié
 ```
 
-En attente :
+Terminé :
 
 ```text
 Création du projet Supabase
+Installation de la CLI Supabase
+Initialisation de la configuration du dépôt
+Liaison avec le projet Supabase hébergé
+```
+
+À venir :
+
+```text
 Création des migrations
 Création des politiques RLS
 Création des buckets Storage

@@ -21,11 +21,13 @@
 - [x] Création de la page 404
 - [x] Configuration de Vitest et Testing Library
 - [x] Tests automatisés du routeur
+- [x] Installer la CLI Supabase
+- [x] Initialiser la configuration Supabase du dépôt
+- [x] Lier le dépôt au projet Supabase hébergé
 
 
 ## À venir
 
-- [ ] Initialiser et lier Supabase localement
 - [ ] Préparer les migrations PostgreSQL
 - [ ] Configurer les politiques RLS
 - [ ] Connecter Flutter à Supabase
