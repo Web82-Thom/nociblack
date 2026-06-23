@@ -13,9 +13,8 @@ L'application permet aux administrateurs de gérer :
 * Les images des articles
 * La publication du catalogue
 
-Le schéma de données et les politiques RLS (Row Level Security) sont déployés sur
-Supabase. La connexion de l'application et la configuration Storage constituent
-les prochaines étapes.
+Le schéma de données, les politiques RLS et Storage sont déployés sur Supabase.
+La connexion de l'application au backend constitue la prochaine étape.
 
 ---
 

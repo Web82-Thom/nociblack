@@ -12,8 +12,9 @@ Le site est responsive et accessible depuis :
 * Tablette
 * Desktop
 
-Les politiques RLS publiques sont déployées et limitent la lecture aux données du
-catalogue publiées. La connexion du client Web à Supabase reste à implémenter.
+Les politiques RLS publiques et Storage sont déployées. Elles limitent la lecture
+aux données publiées et aux médias autorisés. La connexion du client Web à Supabase
+reste à implémenter.
 
 ---
 

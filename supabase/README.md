@@ -39,12 +39,14 @@ supabase/
 ├── config.toml
 ├── migrations/
 │   ├── 20260623112454_create_initial_schema.sql
-│   └── 20260623124112_create_rls_policies.sql
+│   ├── 20260623124112_create_rls_policies.sql
+│   └── 20260623130453_create_storage_configuration.sql
 ├── tests/
 │   └── database/
 │       ├── initial_schema_test.sql
 │       ├── public_rls_test.sql
-│       └── admin_rls_test.sql
+│       ├── admin_rls_test.sql
+│       └── storage_rls_test.sql
 ├── seed.sql           # Futur : uniquement après validation d'un jeu de données
 └── README.md
 ```
@@ -270,11 +272,11 @@ Gérer l'ensemble des données
 
 ---
 
-## Storage cible
+## Storage
 
-Les buckets et leurs politiques seront créés dans la prochaine migration.
+Les buckets et leurs politiques sont déployés et validés sur le projet Supabase hébergé.
 
-### Bucket prévu `item-images`
+### Bucket `item-images`
 
 Utilisé pour :
 
@@ -297,12 +299,12 @@ Contraintes :
 ```text
 Maximum 3 images
 Maximum 2 Mo par image
-Format recommandé : WebP
+Format autorisé : WebP
 ```
 
 ---
 
-### Bucket prévu `brand-assets`
+### Bucket `brand-assets`
 
 Utilisé pour :
 
@@ -318,7 +320,11 @@ Structure :
 brand-assets/
 └── public/
 ```
+Contraintes :
 
+```text
+Maximum 2 Mo par fichier
+Formats autorisés : PNG et WebP
 ---
 
 ## Documentation
@@ -361,12 +367,11 @@ Les tests de régression se trouvent dans :
 supabase/tests/database/
 ├── initial_schema_test.sql
 ├── public_rls_test.sql
-└── admin_rls_test.sql
+├── admin_rls_test.sql
+└── storage_rls_test.sql
 ```
 
-Sans environnement Docker local, il est exécuté intégralement depuis le SQL Editor
-Supabase. Il ouvre une transaction, contrôle les règles du schéma et termine par
-`rollback;` afin de ne conserver aucune donnée de test.
+Sans environnement Docker local, ils sont exécutés intégralement depuis le SQL Editor Supabase. Chaque test ouvre une transaction et termine par `rollback;` afin de ne conserver aucune donnée de test.
 
 Le test administrateur nécessite au moins un profil `SUPER_ADMIN` actif et un
 profil `ADMIN` actif. Aucun UUID ni mot de passe n'est enregistré dans Git.
@@ -384,7 +389,7 @@ Success. No rows returned
 Phase :
 
 ```text
-Schéma PostgreSQL et politiques RLS V1 appliqués et validés
+Schéma PostgreSQL, politiques RLS et Storage V1 appliqués et validés
 ```
 
 Terminé :
@@ -397,6 +402,8 @@ Liaison avec le projet Supabase hébergé
 Création et application de la migration initiale du schéma
 Création et application de la migration RLS
 Création des profils SUPER_ADMIN et ADMIN
+Création des buckets et politiques Storage
+Validation des accès Storage public, ADMIN et SUPER_ADMIN
 Désactivation des inscriptions Auth publiques
 Validation du schéma avec Supabase DB lint
 Validation du test SQL de régression transactionnel
@@ -406,8 +413,6 @@ Validation des accès public, ADMIN, SUPER_ADMIN et administrateur désactivé
 À venir :
 
 ```text
-Création des buckets Storage
-Création des politiques Storage
 Connexion de Flutter et React à Supabase
 ```
 

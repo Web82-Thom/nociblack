@@ -32,10 +32,13 @@
 - [x] Désactiver les inscriptions Auth publiques
 - [x] Valider les accès RLS public, ADMIN et SUPER_ADMIN
 - [x] Valider la révocation des droits d’un administrateur désactivé
+- [x] Créer et appliquer la migration Storage
+- [x] Configurer les buckets `item-images` et `brand-assets`
+- [x] Configurer les politiques RLS Storage
+- [x] Valider les accès Storage public, ADMIN et SUPER_ADMIN
 
 ## À venir
 
-- [ ] Configurer les buckets et politiques Storage
 - [ ] Connecter Flutter à Supabase
 - [ ] Connecter React à Supabase
 
@@ -56,7 +59,8 @@ Les tests transactionnels sont exécutés dans le SQL Editor Supabase :
 supabase/tests/database/
 ├── initial_schema_test.sql
 ├── public_rls_test.sql
-└── admin_rls_test.sql
+├── admin_rls_test.sql
+└── storage_rls_test.sql
 ```
 
 ## Commandes Web

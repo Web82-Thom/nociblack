@@ -2,9 +2,9 @@
 
 ## 1. Objet
 
-Ce document définit l'organisation, les formats et les permissions des médias dans
-Supabase Storage. Les politiques Storage exécutables seront écrites après validation
-de l'architecture documentaire.
+Ce document décrit l'organisation, les formats et les permissions des médias
+Supabase Storage implémentés pour NociBlacK V1. La migration correspondante est
+`supabase/migrations/20260623130453_create_storage_configuration.sql`.
 
 Les logos intégrés à l'application Flutter sont placés localement dans :
 
@@ -82,6 +82,12 @@ brand-assets/
 - ajout, remplacement et suppression réservés au `SUPER_ADMIN` actif ;
 - aucune modification autorisée à un `ADMIN`.
 
+Contraintes du bucket :
+
+- taille maximale : 2 Mo ;
+- formats autorisés : PNG et WebP ;
+- SVG interdit en V1.
+
 ## 4. Cohérence entre Storage et base de données
 
 Une image d'article comporte deux éléments liés :
@@ -141,3 +147,21 @@ Avant l'upload, l'application Android devra :
 
 Ces contrôles améliorent l'expérience utilisateur, mais ne remplacent jamais les
 contraintes Supabase.
+
+## 8. Implémentation et validation
+
+Les buckets `item-images` et `brand-assets` ainsi que leurs politiques RLS sont
+déployés sur le projet Supabase hébergé.
+
+Le test transactionnel est disponible dans :
+
+```text
+supabase/tests/database/storage_rls_test.sql
+```
+
+Il valide les lectures publiques, les uploads administratifs, les chemins autorisés,
+la séparation `ADMIN` / `SUPER_ADMIN` et la révocation des droits après
+désactivation.
+
+Supabase interdit les suppressions directes dans `storage.objects`. Les remplacements
+et suppressions seront donc testés via l'API Storage pendant l'intégration Flutter.
