@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nociblack/features/items/domain/entities/catalog_item.dart';
 
@@ -8,6 +9,9 @@ import '../../../categories/presentation/controllers/active_categories_controlle
 import '../../domain/entities/item_draft.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../controllers/item_form_controller.dart';
+import '../controllers/item_images_controller.dart';
+import '../widgets/item_image_picker_section.dart';
+import 'package:image_picker/image_picker.dart';
 
 /// Formulaire de création d'un article brouillon.
 final class ItemFormPage extends StatefulWidget {
@@ -40,6 +44,8 @@ final class _ItemFormPageState extends State<ItemFormPage> {
   final _displayOrderController = TextEditingController(text: '0');
   late final ActiveCategoriesController _categoriesController;
   late final ItemFormController _itemController;
+  late final ItemImagesController _itemImagesController;
+  final ImagePicker _imagePicker = ImagePicker();
   late final Listenable _formListenable;
   String? _selectedCategoryId;
   bool _slugManuallyEdited = false;
@@ -51,6 +57,8 @@ final class _ItemFormPageState extends State<ItemFormPage> {
       widget.categoryRepository,
     );
     _itemController = ItemFormController(widget.itemRepository);
+    _itemImagesController = ItemImagesController();
+    _itemImagesController.initialize(const []);
     if (widget.itemToEdit case final item?) {
       _selectedCategoryId = item.categoryId;
       _titleController.text = item.title;
@@ -66,6 +74,7 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     _formListenable = Listenable.merge([
       _categoriesController,
       _itemController,
+      _itemImagesController,
     ]);
     _categoriesController.load();
   }
@@ -82,7 +91,57 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     _displayOrderController.dispose();
     _categoriesController.dispose();
     _itemController.dispose();
+    _itemImagesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    if (!_itemImagesController.canAddImage) {
+      return;
+    }
+
+    final selectedImage = await _imagePicker.pickImage(source: source);
+
+    if (selectedImage == null) {
+      return;
+    }
+
+    _itemImagesController.addSelectedImage(File(selectedImage.path));
+  }
+
+  Future<void> _showImageSourcePicker() async {
+    final selectedSource = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text('Caméra'),
+                onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Galerie'),
+                onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: const Text('Annuler'),
+                onTap: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (!mounted || selectedSource == null) {
+      return;
+    }
+
+    await _pickImage(selectedSource);
   }
 
   Future<void> _submit() async {
@@ -301,7 +360,15 @@ final class _ItemFormPageState extends State<ItemFormPage> {
                 alignLabelWithHint: true,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
+
+            ItemImagePickerSection(
+              imageCount: _itemImagesController.totalImageCount,
+              selectedImages: _itemImagesController.newSelectedImages,
+              onAddImagePressed: _showImageSourcePicker,
+              onRemoveSelectedImage: _itemImagesController.removeSelectedImage,
+            ),
+            const SizedBox(height: 24),
             TextFormField(
               key: const Key('item_price_field'),
               controller: _priceController,
