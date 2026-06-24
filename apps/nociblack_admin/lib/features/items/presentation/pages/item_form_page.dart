@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nociblack/features/items/domain/entities/catalog_item.dart';
 
 import '../../../../core/formatters/price_formatter.dart';
 import '../../../../core/formatters/slug_generator.dart';
@@ -13,11 +14,15 @@ final class ItemFormPage extends StatefulWidget {
   const ItemFormPage({
     required this.categoryRepository,
     required this.itemRepository,
+    this.itemToEdit,
     super.key,
   });
 
   final CategoryRepository categoryRepository;
   final ItemRepository itemRepository;
+  final CatalogItem? itemToEdit;
+
+  bool get isEditing => itemToEdit != null;
 
   @override
   State<ItemFormPage> createState() => _ItemFormPageState();
@@ -46,6 +51,18 @@ final class _ItemFormPageState extends State<ItemFormPage> {
       widget.categoryRepository,
     );
     _itemController = ItemFormController(widget.itemRepository);
+    if (widget.itemToEdit case final item?) {
+      _selectedCategoryId = item.categoryId;
+      _titleController.text = item.title;
+      _descriptionController.text = item.description ?? '';
+      _priceController.text = PriceFormatter.inEuros(
+        item.priceCents,
+      ).replaceAll('€', '').trim();
+      _stockController.text = item.stockQuantity.toString();
+      _skuController.text = item.sku;
+      _displayOrderController.text = item.displayOrder.toString();
+      _slugController.text = SlugGenerator.fromText(item.title);
+    }
     _formListenable = Listenable.merge([
       _categoriesController,
       _itemController,
@@ -72,27 +89,30 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final description = _descriptionController.text.trim();
-    final isCreated = await _itemController.create(
-      ItemDraft(
-        categoryId: _selectedCategoryId!,
-        title: _titleController.text.trim(),
-        slug: _slugController.text.trim(),
-        description: description.isEmpty ? null : description,
-        priceCents: PriceFormatter.tryParseEuros(_priceController.text)!,
-        stockQuantity: int.parse(_stockController.text.trim()),
-        sku: _skuController.text.trim().toUpperCase(),
-        displayOrder: int.parse(_displayOrderController.text.trim()),
-      ),
+
+    final draft = ItemDraft(
+      categoryId: _selectedCategoryId!,
+      title: _titleController.text.trim(),
+      slug: _slugController.text.trim(),
+      description: description.isEmpty ? null : description,
+      priceCents: PriceFormatter.tryParseEuros(_priceController.text)!,
+      stockQuantity: int.parse(_stockController.text.trim()),
+      sku: _skuController.text.trim().toUpperCase(),
+      displayOrder: int.parse(_displayOrderController.text.trim()),
     );
 
-    if (isCreated && mounted) {
+    final itemToEdit = widget.itemToEdit;
+
+    final isSaved = itemToEdit == null
+        ? await _itemController.create(draft)
+        : await _itemController.update(itemId: itemToEdit.id, draft: draft);
+
+    if (isSaved && mounted) {
       Navigator.of(context).pop(true);
       return;
     }
 
     if (mounted) {
-      // Un conflit concerne le slug ou la référence. Le retour sur la REF est
-      // le cas de correction le plus fréquent et conserve toute la saisie.
       _referenceFocusNode.requestFocus();
       _skuController.selection = TextSelection.collapsed(
         offset: _skuController.text.length,
@@ -103,15 +123,18 @@ final class _ItemFormPageState extends State<ItemFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nouvel article')),
+      appBar: AppBar(
+        title: Text(widget.isEditing ? 'Modifier l’article' : 'Nouvel article'),
+      ),
       body: SafeArea(
         child: ListenableBuilder(
           listenable: _formListenable,
           builder: (context, child) {
             return switch (_categoriesController.status) {
               ActiveCategoriesStatus.initial ||
-              ActiveCategoriesStatus.loading =>
-                const Center(child: CircularProgressIndicator()),
+              ActiveCategoriesStatus.loading => const Center(
+                child: CircularProgressIndicator(),
+              ),
               ActiveCategoriesStatus.failure => _CategoriesFailureView(
                 message: _categoriesController.errorMessage!,
                 onRetry: _categoriesController.load,
@@ -147,18 +170,19 @@ final class _ItemFormPageState extends State<ItemFormPage> {
                 labelText: 'Catégorie',
                 prefixIcon: Icon(Icons.category_outlined),
               ),
-              items: _categoriesController.categories.map((category) {
-                return DropdownMenuItem(
-                  value: category.id,
-                  child: Text(category.name),
-                );
-              }).toList(growable: false),
+              items: _categoriesController.categories
+                  .map((category) {
+                    return DropdownMenuItem(
+                      value: category.id,
+                      child: Text(category.name),
+                    );
+                  })
+                  .toList(growable: false),
               onChanged: _itemController.isSubmitting
                   ? null
                   : (value) => setState(() => _selectedCategoryId = value),
-              validator: (value) => value == null
-                  ? 'Sélectionnez une catégorie.'
-                  : null,
+              validator: (value) =>
+                  value == null ? 'Sélectionnez une catégorie.' : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -201,7 +225,9 @@ final class _ItemFormPageState extends State<ItemFormPage> {
               key: const Key('item_price_field'),
               controller: _priceController,
               readOnly: _itemController.isSubmitting,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               textInputAction: TextInputAction.next,
               decoration: const InputDecoration(
                 labelText: 'Prix en euros',
@@ -264,7 +290,11 @@ final class _ItemFormPageState extends State<ItemFormPage> {
                       dimension: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Créer le brouillon'),
+                  : Text(
+                      widget.isEditing
+                          ? 'Enregistrer les modifications'
+                          : 'Créer le brouillon',
+                    ),
             ),
           ],
         ),

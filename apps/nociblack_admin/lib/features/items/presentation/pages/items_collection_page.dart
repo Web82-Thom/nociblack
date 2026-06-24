@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nociblack/features/categories/domain/repositories/category_repository.dart';
+import 'package:nociblack/features/items/presentation/pages/item_form_page.dart';
 
 import '../../domain/repositories/item_repository.dart';
 import '../controllers/items_list_controller.dart';
@@ -8,13 +10,15 @@ import '../widgets/catalog_item_card.dart';
 final class ItemsCollectionPage extends StatefulWidget {
   const ItemsCollectionPage({
     required this.title,
-    required this.repository,
+    required this.itemRepository,
+    required this.categoryRepository,
     required this.collection,
     super.key,
   });
 
   final String title;
-  final ItemRepository repository;
+  final ItemRepository itemRepository;
+  final CategoryRepository categoryRepository;
   final ItemsCollection collection;
 
   @override
@@ -28,7 +32,7 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
   void initState() {
     super.initState();
     _controller = ItemsListController(
-      repository: widget.repository,
+      repository: widget.itemRepository,
       collection: widget.collection,
     );
     _controller.load();
@@ -48,8 +52,9 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
         listenable: _controller,
         builder: (context, child) {
           return switch (_controller.status) {
-            ItemsListStatus.initial || ItemsListStatus.loading =>
-              const Center(child: CircularProgressIndicator()),
+            ItemsListStatus.initial || ItemsListStatus.loading => const Center(
+              child: CircularProgressIndicator(),
+            ),
             ItemsListStatus.failure => _ItemsFailureView(
               message: _controller.errorMessage!,
               onRetry: _controller.load,
@@ -63,7 +68,28 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
                 itemCount: _controller.items.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
-                  return CatalogItemCard(item: _controller.items[index]);
+                  final item = _controller.items[index];
+
+                  return CatalogItemCard(
+                    item: item,
+                    onTap: () async {
+                      final wasSaved = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute<bool>(
+                          builder: (_) => ItemFormPage(
+                            categoryRepository: widget.categoryRepository,
+                            itemRepository: widget.itemRepository,
+                            itemToEdit: item,
+                          ),
+                        ),
+                      );
+
+                      if (wasSaved == true) {
+                        await _controller.load();
+                      }
+                    },
+                    itemRepository: widget.itemRepository,
+                    categoryRepository: widget.categoryRepository,
+                  );
                 },
               ),
             ),

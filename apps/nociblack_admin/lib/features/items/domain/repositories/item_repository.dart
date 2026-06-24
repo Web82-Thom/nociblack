@@ -10,4 +10,9 @@ abstract interface class ItemRepository {
   Future<List<CatalogItem>> getArchivedItems();
 
   Future<CatalogItem> createItem(ItemDraft draft);
+
+  Future<CatalogItem> updateItem({
+    required String itemId,
+    required ItemDraft draft,
+  });
 }

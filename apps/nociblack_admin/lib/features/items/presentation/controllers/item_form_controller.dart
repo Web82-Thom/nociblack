@@ -33,4 +33,26 @@ final class ItemFormController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> update({
+    required String itemId,
+    required ItemDraft draft,
+  }) async {
+    if (_isSubmitting) return false;
+
+    _isSubmitting = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _repository.updateItem(itemId: itemId, draft: draft);
+      return true;
+    } on ItemFailure catch (failure) {
+      _errorMessage = failure.message;
+      return false;
+    } finally {
+      _isSubmitting = false;
+      notifyListeners();
+    }
+  }
 }

@@ -88,6 +88,38 @@ final class SupabaseItemRepository implements ItemRepository {
     }
   }
 
+  @override
+  Future<CatalogItem> updateItem({
+    required String itemId,
+    required ItemDraft draft,
+  }) async {
+    try {
+      final row = await _client
+          .from('items')
+          .update({
+            'category_id': draft.categoryId,
+            'title': draft.title,
+            'slug': draft.slug,
+            'description': draft.description,
+            'price_cents': draft.priceCents,
+            'stock_quantity': draft.stockQuantity,
+            'sku': draft.sku,
+            'display_order': draft.displayOrder,
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          })
+          .eq('id', itemId)
+          .select(_selection)
+          .single();
+
+      return CatalogItemMapper.fromJson(row);
+    } on PostgrestException catch (error) {
+      if (error.code == '23505') throw const ItemConflictFailure();
+      throw const ItemSaveFailure();
+    } catch (_) {
+      throw const ItemSaveFailure();
+    }
+  }
+
   List<CatalogItem> _mapRows(List<Map<String, dynamic>> rows) {
     return List.unmodifiable(rows.map(CatalogItemMapper.fromJson));
   }

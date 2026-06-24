@@ -284,10 +284,11 @@ Terminé :
 * Gestion du prix en centimes et de la REF
 * Gestion des états chargement, vide, erreur et actualisation
 * Analyse statique et 52 tests automatisés
+* Modification des articles
 
 À venir :
 
-* Modification et archivage des articles
+* archivage des articles
 * Images et publication des articles
 * Tests des mutations via l'API Supabase Storage
 

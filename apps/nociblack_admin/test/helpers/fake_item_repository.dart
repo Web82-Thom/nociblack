@@ -20,6 +20,8 @@ final class FakeItemRepository implements ItemRepository {
   ItemDraft? lastCreatedDraft;
   int currentCalls = 0;
   int archivedCalls = 0;
+  ItemDraft? lastUpdatedDraft;
+  String? lastUpdatedItemId;
 
   @override
   Future<List<CatalogItem>> getCurrentItems() async {
@@ -56,5 +58,40 @@ final class FakeItemRepository implements ItemRepository {
     );
     currentItems = [...currentItems, item];
     return item;
+  }
+
+  @override
+  Future<CatalogItem> updateItem({
+    required String itemId,
+    required ItemDraft draft,
+  }) async {
+    if (saveFailure case final failure?) throw failure;
+
+    lastUpdatedItemId = itemId;
+    lastUpdatedDraft = draft;
+
+    final now = DateTime.utc(2026, 6, 24, 12);
+
+    final updatedItem = CatalogItem(
+      id: itemId,
+      categoryId: draft.categoryId,
+      categoryName: 'Catégorie test',
+      title: draft.title,
+      description: draft.description,
+      priceCents: draft.priceCents,
+      stockQuantity: draft.stockQuantity,
+      sku: draft.sku,
+      status: ItemStatus.draft,
+      displayOrder: draft.displayOrder,
+      createdAt: now,
+      updatedAt: now,
+    );
+
+    currentItems = [
+      for (final currentItem in currentItems)
+        if (currentItem.id == itemId) updatedItem else currentItem,
+    ];
+
+    return updatedItem;
   }
 }

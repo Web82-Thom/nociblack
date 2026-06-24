@@ -65,7 +65,8 @@ final class AdminDashboardPage extends StatelessWidget {
                 DashboardActionCard(
                   icon: Icons.category_outlined,
                   title: 'Catégories',
-                  description: 'Consulter et créer les catégories du catalogue.',
+                  description:
+                      'Consulter et créer les catégories du catalogue.',
                   onTap: () => _openCategories(context),
                 ),
                 DashboardActionCard(
@@ -90,19 +91,18 @@ final class AdminDashboardPage extends StatelessWidget {
   }
 
   void _openItems(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(
+    Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => ItemsListPage(repository: itemRepository),
+        builder: (_) => ItemsListPage(
+          itemRepository: itemRepository,
+          categoryRepository: categoryRepository,
+        ),
       ),
     );
   }
 
   void _openCreateItem(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(
+    Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => ItemFormPage(
           categoryRepository: categoryRepository,
@@ -121,11 +121,9 @@ final class AdminDashboardPage extends StatelessWidget {
   }
 
   void _openItemsHistory(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(
+    Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => ItemsHistoryPage(repository: itemRepository),
+        builder: (_) => ItemsHistoryPage(itemRepository: itemRepository, categoryRepository: categoryRepository,),
       ),
     );
   }
