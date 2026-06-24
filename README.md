@@ -81,9 +81,9 @@ Services retenus pour la V1 :
 le projet hébergé. Les accès public, `ADMIN`, `SUPER_ADMIN` et administrateur
 désactivé sont validés par des tests SQL transactionnels. L'application Flutter
 Admin initialise Supabase, authentifie les administrateurs actifs, restaure leur
-session et consulte les articles courants ou archivés. La création et l'édition
-du catalogue Flutter ainsi que la connexion de l'application React restent à
-implémenter.
+session, consulte les articles et charge les catégories actives. La gestion des
+catégories, la création et l'édition des articles ainsi que la connexion de
+l'application React restent à implémenter.
 
 ---
 

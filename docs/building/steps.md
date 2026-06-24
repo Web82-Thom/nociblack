@@ -53,10 +53,13 @@
 - [x] Connecter les listes Articles et Historique à Supabase
 - [x] Valider les états chargement, vide, erreur et actualisation
 - [x] Valider l'analyse statique et les 28 tests Flutter
+- [x] Créer et connecter le repository des catégories actives
+- [x] Intégrer le sélecteur de catégorie au formulaire Article
+- [x] Valider l'analyse statique et les 34 tests Flutter
 
 ## À venir
 
-- [ ] Connecter le repository des catégories dans Flutter
+- [ ] Implémenter la gestion des catégories dans Flutter
 - [ ] Implémenter la création et la modification des articles
 - [ ] Tester les mutations Storage depuis l'application Flutter
 - [ ] Connecter React à Supabase

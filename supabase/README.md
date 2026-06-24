@@ -413,12 +413,13 @@ Validation du démarrage Android et des tests Flutter
 Authentification des profils ADMIN et SUPER_ADMIN actifs
 Validation de la restauration de session et de la déconnexion
 Lecture des articles courants et archivés depuis l'application Flutter Admin
+Lecture des catégories actives depuis l'application Flutter Admin
 ```
 
 À venir :
 
 ```text
-Création et modification du catalogue depuis l'application Flutter Admin
+Gestion des catégories, puis création et modification des articles depuis Flutter
 Connexion de l'application React à Supabase
 ```
 
