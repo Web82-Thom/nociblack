@@ -46,6 +46,15 @@ void main() {
     expect(find.widgetWithText(AppBar, 'Historique'), findsOneWidget);
   });
 
+  testWidgets('opens categories management from the dashboard', (tester) async {
+    await pumpDashboard(tester);
+
+    await tester.tap(find.text('Catégories'));
+    await tester.pumpAndSettle();
+
+    expect(find.widgetWithText(AppBar, 'Catégories'), findsOneWidget);
+  });
+
   testWidgets('opens the item form from the dashboard', (tester) async {
     await pumpDashboard(tester);
 

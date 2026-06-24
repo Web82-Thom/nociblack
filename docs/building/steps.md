@@ -56,10 +56,14 @@
 - [x] Créer et connecter le repository des catégories actives
 - [x] Intégrer le sélecteur de catégorie au formulaire Article
 - [x] Valider l'analyse statique et les 34 tests Flutter
+- [x] Ajouter la carte et la liste de gestion des catégories
+- [x] Implémenter la création d'une catégorie
+- [x] Gérer la génération du slug et les conflits d'unicité
+- [x] Valider l'analyse statique et les 43 tests Flutter
 
 ## À venir
 
-- [ ] Implémenter la gestion des catégories dans Flutter
+- [ ] Implémenter la modification et l'archivage des catégories
 - [ ] Implémenter la création et la modification des articles
 - [ ] Tester les mutations Storage depuis l'application Flutter
 - [ ] Connecter React à Supabase

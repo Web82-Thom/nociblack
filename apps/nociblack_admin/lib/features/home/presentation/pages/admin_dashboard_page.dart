@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../auth/domain/entities/admin_profile.dart';
 import '../../../categories/domain/repositories/category_repository.dart';
+import '../../../categories/presentation/pages/categories_list_page.dart';
 import '../../../items/domain/repositories/item_repository.dart';
 import '../../../items/presentation/pages/item_form_page.dart';
 import '../../../items/presentation/pages/items_history_page.dart';
@@ -62,6 +63,12 @@ final class AdminDashboardPage extends StatelessWidget {
                   onTap: () => _openItems(context),
                 ),
                 DashboardActionCard(
+                  icon: Icons.category_outlined,
+                  title: 'Catégories',
+                  description: 'Consulter et créer les catégories du catalogue.',
+                  onTap: () => _openCategories(context),
+                ),
+                DashboardActionCard(
                   icon: Icons.history,
                   title: 'Historique',
                   description: 'Historique des articles ajoutés',
@@ -100,6 +107,14 @@ final class AdminDashboardPage extends StatelessWidget {
         builder: (_) => ItemFormPage(
           categoryRepository: categoryRepository,
         ),
+      ),
+    );
+  }
+
+  void _openCategories(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CategoriesListPage(repository: categoryRepository),
       ),
     );
   }

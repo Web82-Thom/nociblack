@@ -414,12 +414,13 @@ Authentification des profils ADMIN et SUPER_ADMIN actifs
 Validation de la restauration de session et de la déconnexion
 Lecture des articles courants et archivés depuis l'application Flutter Admin
 Lecture des catégories actives depuis l'application Flutter Admin
+Création des catégories depuis l'application Flutter Admin
 ```
 
 À venir :
 
 ```text
-Gestion des catégories, puis création et modification des articles depuis Flutter
+Modification des catégories, puis création et modification des articles Flutter
 Connexion de l'application React à Supabase
 ```
 

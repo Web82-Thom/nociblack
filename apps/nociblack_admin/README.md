@@ -15,8 +15,8 @@ L'application permet aux administrateurs de gérer :
 
 Le schéma de données, les politiques RLS et Storage sont déployés sur Supabase.
 Le SDK Supabase, l'authentification administrative, la lecture des articles et
-des catégories actives sont intégrés et validés sur Android. La gestion des
-catégories puis la création des articles constituent les prochaines étapes.
+la création des catégories sont intégrés et validés sur Android. La modification
+des catégories puis la création des articles constituent les prochaines étapes.
 
 ---
 
@@ -253,7 +253,7 @@ flutter analyze
 flutter test
 ```
 
-Le socle actuel compte trente-quatre tests couvrant la configuration, les
+Le socle actuel compte quarante-trois tests couvrant la configuration, les
 domaines Auth, Articles et Catégories, les contrôleurs et les transitions de
 widgets. Le démarrage Android et les lectures Supabase ont également été validés.
 
@@ -276,12 +276,14 @@ Terminé :
 * Lecture des articles courants et archivés depuis Supabase
 * Lecture des catégories actives depuis Supabase
 * Sélecteur de catégorie dans le formulaire Article
+* Consultation et création des catégories
+* Génération des slugs et gestion des conflits d'unicité
 * Gestion des états chargement, vide, erreur et actualisation
-* Analyse statique et 34 tests automatisés
+* Analyse statique et 43 tests automatisés
 
 À venir :
 
-* Gestion des catégories
+* Modification et archivage des catégories
 * Création et modification des articles
 * Tests des mutations via l'API Supabase Storage
 
