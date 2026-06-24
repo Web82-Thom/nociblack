@@ -57,11 +57,20 @@ Technologies :
 
 Site public NociBlacK.
 
-Fonctionnalités prévues :
+Fonctionnalités actuelles :
+
+* Architecture React initialisée
+* React Router configuré
+* Variables d'environnement configurées
+* Connexion Supabase validée
+* Lecture des catégories validée
+
+Fonctionnalités à venir :
 
 * Consultation du catalogue
 * Recherche par catégorie
-* Affichage responsive
+* Fiches produits
+* Affichage responsive complet
 * Optimisation SEO
 
 ---

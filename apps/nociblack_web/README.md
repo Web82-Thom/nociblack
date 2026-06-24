@@ -13,8 +13,11 @@ Le site est responsive et accessible depuis :
 * Desktop
 
 Les politiques RLS publiques et Storage sont déployées. Elles limitent la lecture
-aux données publiées et aux médias autorisés. La connexion du client Web à Supabase
-reste à implémenter.
+aux données publiées et aux médias autorisés. 
+La connexion du client Web à Supabase est implémenter et validée.
+Le client React utilise le SDK officiel Supabase JS et les variables
+d'environnement Vite pour accéder aux données publiques protégées par les
+politiques RLS.
 
 ---
 
@@ -53,8 +56,6 @@ src/
 │   ├── providers/
 │   └── router/
 ├── core/
-│   ├── config/
-│   ├── errors/
 │   └── supabase/
 ├── features/
 │   ├── home/
@@ -91,6 +92,7 @@ Principes :
 * React Router
 * TanStack Query
 * CSS Modules
+* Supabase JS
 
 ### Backend
 

@@ -67,13 +67,13 @@
 - [x] Gérer le prix en centimes, le slug et la REF
 - [x] Valider les conflits de slug et de REF
 - [x] Valider l'analyse statique et les 52 tests Flutter
+- [ ] Connecter React à Supabase
 
 ## À venir
 
 - [ ] Implémenter la modification et l'archivage des articles
 - [ ] Implémenter la gestion des images et la publication des articles
 - [ ] Tester les mutations Storage depuis l'application Flutter
-- [ ] Connecter React à Supabase
 
 ## Commandes Supabase
 

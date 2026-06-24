@@ -27,7 +27,9 @@ apps/nociblack_admin
 apps/nociblack_web
 ```
 
-consommeront les données via Supabase après leur connexion au backend.
+consomment les données via Supabase.
+L'application Flutter Admin est connectée et opérationnelle.
+L'application React Web est connectée et validée pour la lecture publique.
 
 ---
 
@@ -325,6 +327,7 @@ Contraintes :
 ```text
 Maximum 2 Mo par fichier
 Formats autorisés : PNG et WebP
+```
 ---
 
 ## Documentation
@@ -417,13 +420,21 @@ Lecture des catégories actives depuis l'application Flutter Admin
 Création des catégories depuis l'application Flutter Admin
 Modification, archivage et réactivation des catégories depuis Flutter Admin
 Création des articles brouillons depuis l'application Flutter Admin
+Connexion de l'application React à Supabase
+Lecture publique des catégories depuis React
+Validation des variables d'environnement Vite
+Validation du SDK Supabase JS
 ```
 
 À venir :
 
 ```text
-Modification, images et publication des articles depuis Flutter Admin
-Connexion de l'application React à Supabase
+Modification des articles depuis Flutter Admin
+Gestion des images des articles
+Publication des articles
+Catalogue public React
+Fiches produits
+Recherche et filtrage
 ```
 
 ---
