@@ -60,10 +60,12 @@
 - [x] Implémenter la création d'une catégorie
 - [x] Gérer la génération du slug et les conflits d'unicité
 - [x] Valider l'analyse statique et les 43 tests Flutter
+- [x] Implémenter la modification des catégories
+- [x] Implémenter l'archivage et la réactivation des catégories
+- [x] Valider l'analyse statique et les 47 tests Flutter
 
 ## À venir
 
-- [ ] Implémenter la modification et l'archivage des catégories
 - [ ] Implémenter la création et la modification des articles
 - [ ] Tester les mutations Storage depuis l'application Flutter
 - [ ] Connecter React à Supabase

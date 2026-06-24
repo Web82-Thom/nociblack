@@ -35,4 +35,21 @@ final class CategoriesListController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> setActive(CatalogCategory category, bool isActive) async {
+    _errorMessage = null;
+
+    try {
+      await _repository.setCategoryActive(
+        id: category.id,
+        isActive: isActive,
+      );
+      await load();
+      return true;
+    } on CategoryFailure catch (failure) {
+      _errorMessage = failure.message;
+      notifyListeners();
+      return false;
+    }
+  }
 }

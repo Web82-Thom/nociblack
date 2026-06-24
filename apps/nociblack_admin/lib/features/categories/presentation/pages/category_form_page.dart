@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/formatters/slug_generator.dart';
+import '../../domain/entities/catalog_category.dart';
 import '../../domain/entities/category_draft.dart';
 import '../../domain/repositories/category_repository.dart';
 import '../controllers/category_form_controller.dart';
 
 final class CategoryFormPage extends StatefulWidget {
-  const CategoryFormPage({required this.repository, super.key});
+  const CategoryFormPage({
+    required this.repository,
+    this.category,
+    super.key,
+  });
 
   final CategoryRepository repository;
+  final CatalogCategory? category;
 
   @override
   State<CategoryFormPage> createState() => _CategoryFormPageState();
@@ -16,16 +22,26 @@ final class CategoryFormPage extends StatefulWidget {
 
 final class _CategoryFormPageState extends State<CategoryFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _slugController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _displayOrderController = TextEditingController(text: '0');
+  late final TextEditingController _nameController;
+  late final TextEditingController _slugController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _displayOrderController;
   late final CategoryFormController _controller;
-  bool _slugManuallyEdited = false;
+  late bool _slugManuallyEdited;
 
   @override
   void initState() {
     super.initState();
+    final category = widget.category;
+    _nameController = TextEditingController(text: category?.name);
+    _slugController = TextEditingController(text: category?.slug);
+    _descriptionController = TextEditingController(
+      text: category?.description,
+    );
+    _displayOrderController = TextEditingController(
+      text: (category?.displayOrder ?? 0).toString(),
+    );
+    _slugManuallyEdited = category != null;
     _controller = CategoryFormController(widget.repository);
   }
 
@@ -43,8 +59,9 @@ final class _CategoryFormPageState extends State<CategoryFormPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final description = _descriptionController.text.trim();
-    final isCreated = await _controller.create(
-      CategoryDraft(
+    final isSaved = await _controller.save(
+      categoryId: widget.category?.id,
+      draft: CategoryDraft(
         name: _nameController.text.trim(),
         slug: _slugController.text.trim(),
         description: description.isEmpty ? null : description,
@@ -52,13 +69,17 @@ final class _CategoryFormPageState extends State<CategoryFormPage> {
       ),
     );
 
-    if (isCreated && mounted) Navigator.of(context).pop(true);
+    if (isSaved && mounted) Navigator.of(context).pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nouvelle catégorie')),
+      appBar: AppBar(
+        title: Text(
+          widget.category == null ? 'Nouvelle catégorie' : 'Modifier la catégorie',
+        ),
+      ),
       body: SafeArea(
         child: ListenableBuilder(
           listenable: _controller,
@@ -144,7 +165,11 @@ final class _CategoryFormPageState extends State<CategoryFormPage> {
                               dimension: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Créer la catégorie'),
+                          : Text(
+                              widget.category == null
+                                  ? 'Créer la catégorie'
+                                  : 'Enregistrer les modifications',
+                            ),
                     ),
                   ],
                 ),

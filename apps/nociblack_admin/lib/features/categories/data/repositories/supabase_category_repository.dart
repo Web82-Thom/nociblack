@@ -73,4 +73,51 @@ final class SupabaseCategoryRepository implements CategoryRepository {
       throw const CategorySaveFailure();
     }
   }
+
+  @override
+  Future<CatalogCategory> updateCategory({
+    required String id,
+    required CategoryDraft draft,
+  }) async {
+    return _updateCategory(
+      id: id,
+      values: {
+        'name': draft.name,
+        'slug': draft.slug,
+        'description': draft.description,
+        'display_order': draft.displayOrder,
+      },
+    );
+  }
+
+  @override
+  Future<CatalogCategory> setCategoryActive({
+    required String id,
+    required bool isActive,
+  }) async {
+    return _updateCategory(id: id, values: {'is_active': isActive});
+  }
+
+  Future<CatalogCategory> _updateCategory({
+    required String id,
+    required Map<String, Object?> values,
+  }) async {
+    try {
+      final row = await _client
+          .from('categories')
+          .update(values)
+          .eq('id', id)
+          .select(_selection)
+          .single();
+
+      return CatalogCategoryMapper.fromJson(row);
+    } on PostgrestException catch (error) {
+      if (error.code == '23505') {
+        throw const CategoryConflictFailure();
+      }
+      throw const CategorySaveFailure();
+    } catch (_) {
+      throw const CategorySaveFailure();
+    }
+  }
 }

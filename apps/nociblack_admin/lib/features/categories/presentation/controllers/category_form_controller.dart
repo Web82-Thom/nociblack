@@ -15,7 +15,7 @@ final class CategoryFormController extends ChangeNotifier {
   bool get isSubmitting => _isSubmitting;
   String? get errorMessage => _errorMessage;
 
-  Future<bool> create(CategoryDraft draft) async {
+  Future<bool> save({required CategoryDraft draft, String? categoryId}) async {
     if (_isSubmitting) return false;
 
     _isSubmitting = true;
@@ -23,7 +23,11 @@ final class CategoryFormController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repository.createCategory(draft);
+      if (categoryId == null) {
+        await _repository.createCategory(draft);
+      } else {
+        await _repository.updateCategory(id: categoryId, draft: draft);
+      }
       return true;
     } on CategoryFailure catch (failure) {
       _errorMessage = failure.message;

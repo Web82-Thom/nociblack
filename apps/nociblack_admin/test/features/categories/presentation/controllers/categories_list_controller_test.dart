@@ -35,4 +35,20 @@ void main() {
       'Impossible de charger les catégories pour le moment.',
     );
   });
+
+  test('archives a category and refreshes the list', () async {
+    final category = buildCatalogCategory();
+    final repository = FakeCategoryRepository(
+      categories: [category],
+      allCategories: [category],
+    );
+    final controller = CategoriesListController(repository);
+    addTearDown(controller.dispose);
+    await controller.load();
+
+    final result = await controller.setActive(category, false);
+
+    expect(result, isTrue);
+    expect(controller.categories.single.isActive, isFalse);
+  });
 }

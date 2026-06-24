@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../domain/entities/catalog_category.dart';
 import '../../domain/repositories/category_repository.dart';
 import '../controllers/categories_list_controller.dart';
 import '../widgets/catalog_category_card.dart';
@@ -31,13 +32,58 @@ final class _CategoriesListPageState extends State<CategoriesListPage> {
   }
 
   Future<void> _openCreationForm() async {
-    final isCreated = await Navigator.of(context).push<bool>(
+    await _openForm();
+  }
+
+  Future<void> _openForm([CatalogCategory? category]) async {
+    final isSaved = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => CategoryFormPage(repository: widget.repository),
+        builder: (_) => CategoryFormPage(
+          repository: widget.repository,
+          category: category,
+        ),
       ),
     );
 
-    if (isCreated == true) await _controller.load();
+    if (isSaved == true) await _controller.load();
+  }
+
+  Future<void> _toggleActive(CatalogCategory category) async {
+    if (category.isActive) {
+      final isConfirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Archiver la catégorie ?'),
+          content: Text(
+            '« ${category.name} » ne sera plus proposée pour les nouveaux '
+            'articles. Ses articles existants sont conservés.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Archiver'),
+            ),
+          ],
+        ),
+      );
+
+      if (isConfirmed != true) return;
+    }
+
+    final isUpdated = await _controller.setActive(
+      category,
+      !category.isActive,
+    );
+
+    if (!isUpdated && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_controller.errorMessage!)),
+      );
+    }
   }
 
   @override
@@ -64,6 +110,10 @@ final class _CategoriesListPageState extends State<CategoriesListPage> {
                 itemBuilder: (context, index) {
                   return CatalogCategoryCard(
                     category: _controller.categories[index],
+                    onEdit: () => _openForm(_controller.categories[index]),
+                    onToggleActive: () => _toggleActive(
+                      _controller.categories[index],
+                    ),
                   );
                 },
               ),

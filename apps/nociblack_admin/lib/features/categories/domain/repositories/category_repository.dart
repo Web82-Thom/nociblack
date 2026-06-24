@@ -8,4 +8,14 @@ abstract interface class CategoryRepository {
   Future<List<CatalogCategory>> getAllCategories();
 
   Future<CatalogCategory> createCategory(CategoryDraft draft);
+
+  Future<CatalogCategory> updateCategory({
+    required String id,
+    required CategoryDraft draft,
+  });
+
+  Future<CatalogCategory> setCategoryActive({
+    required String id,
+    required bool isActive,
+  });
 }
