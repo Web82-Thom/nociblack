@@ -82,12 +82,20 @@
 - [x] Adopter les chemins `items/{itemId}/{uuid}.jpg` et le bucket JPEG de 5 Mo
 - [x] Aligner les tests SQL et les fixtures Flutter sur l'architecture JPEG
 - [x] Valider le reset local, les cinq tests SQL et les lints local et distant
+- [x] Ajouter la sélection, l'aperçu et la limite de trois images dans le formulaire
+- [x] Implémenter la compression JPEG et les services Storage / `item_images`
+- [x] Brancher la création des images après la création du brouillon
+- [x] Compenser automatiquement le brouillon en cas d'échec du workflow image
+- [x] Valider réellement des brouillons avec une et deux images sur Supabase
+- [x] Valider l'analyse statique et les 72 tests Flutter
 
 ## À venir
 
 - [ ] Valider réellement la suppression d'un article avec ses images Storage
-- [ ] Implémenter la gestion des images et la publication des articles
-- [ ] Tester les mutations Storage depuis l'application Flutter
+- [ ] Charger et ajouter les images existantes en modification
+- [ ] Supprimer et renuméroter proprement les images existantes
+- [ ] Implémenter la publication des articles
+- [ ] Tester les suppressions et remplacements Storage depuis Flutter
 
 ## Commandes Supabase
 

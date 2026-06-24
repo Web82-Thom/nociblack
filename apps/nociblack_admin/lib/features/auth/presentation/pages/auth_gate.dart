@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../home/presentation/pages/admin_dashboard_page.dart';
 import '../../../categories/domain/repositories/category_repository.dart';
 import '../../../items/domain/repositories/item_repository.dart';
+import '../../../items/domain/services/item_image_creation_service.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../controllers/auth_controller.dart';
 import 'login_page.dart';
@@ -13,12 +14,14 @@ final class AuthGate extends StatefulWidget {
     required this.authRepository,
     required this.categoryRepository,
     required this.itemRepository,
+    required this.itemImageCreationService,
     super.key,
   });
 
   final AuthRepository authRepository;
   final CategoryRepository categoryRepository;
   final ItemRepository itemRepository;
+  final ItemImageCreationService itemImageCreationService;
 
   @override
   State<AuthGate> createState() => _AuthGateState();
@@ -55,6 +58,7 @@ final class _AuthGateState extends State<AuthGate> {
             onSignOut: _controller.signOut,
             categoryRepository: widget.categoryRepository,
             itemRepository: widget.itemRepository,
+            itemImageCreationService: widget.itemImageCreationService,
           ),
         };
       },
@@ -67,8 +71,6 @@ final class _AuthenticationLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

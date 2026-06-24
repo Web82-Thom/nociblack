@@ -3,6 +3,7 @@ import '../../../auth/domain/entities/admin_profile.dart';
 import '../../../categories/domain/repositories/category_repository.dart';
 import '../../../categories/presentation/pages/categories_list_page.dart';
 import '../../../items/domain/repositories/item_repository.dart';
+import '../../../items/domain/services/item_image_creation_service.dart';
 import '../../../items/presentation/pages/item_form_page.dart';
 import '../../../items/presentation/pages/item_archive_page.dart';
 import '../../../items/presentation/pages/items_history_page.dart';
@@ -16,6 +17,7 @@ final class AdminDashboardPage extends StatelessWidget {
     required this.onSignOut,
     required this.categoryRepository,
     required this.itemRepository,
+    required this.itemImageCreationService,
     super.key,
   });
 
@@ -23,6 +25,7 @@ final class AdminDashboardPage extends StatelessWidget {
   final Future<void> Function() onSignOut;
   final CategoryRepository categoryRepository;
   final ItemRepository itemRepository;
+  final ItemImageCreationService itemImageCreationService;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +105,7 @@ final class AdminDashboardPage extends StatelessWidget {
         builder: (_) => ItemsListPage(
           itemRepository: itemRepository,
           categoryRepository: categoryRepository,
+          itemImageCreationService: itemImageCreationService,
         ),
       ),
     );
@@ -113,6 +117,7 @@ final class AdminDashboardPage extends StatelessWidget {
         builder: (_) => ItemFormPage(
           categoryRepository: categoryRepository,
           itemRepository: itemRepository,
+          itemImageCreationService: itemImageCreationService,
         ),
       ),
     );
@@ -132,6 +137,7 @@ final class AdminDashboardPage extends StatelessWidget {
         builder: (_) => ItemsHistoryPage(
           itemRepository: itemRepository,
           categoryRepository: categoryRepository,
+          itemImageCreationService: itemImageCreationService,
         ),
       ),
     );
@@ -143,6 +149,7 @@ final class AdminDashboardPage extends StatelessWidget {
         builder: (_) => ItemArchivePage(
           itemRepository: itemRepository,
           categoryRepository: categoryRepository,
+          itemImageCreationService: itemImageCreationService,
         ),
       ),
     );

@@ -9,6 +9,7 @@ import 'package:nociblack/features/items/presentation/pages/items_list_page.dart
 
 import '../../../../helpers/catalog_item_fixture.dart';
 import '../../../../helpers/fake_item_repository.dart';
+import '../../../../helpers/fake_item_image_creation_service.dart';
 
 // Simple fake to satisfy the CategoryRepository dependency in tests.
 class FakeCategoryRepository implements CategoryRepository {
@@ -21,7 +22,13 @@ void main() {
     final repository = FakeItemRepository(currentItems: [buildCatalogItem()]);
 
     await tester.pumpWidget(
-      MaterialApp(home: ItemsListPage(itemRepository: repository, categoryRepository: FakeCategoryRepository(), )),
+      MaterialApp(
+        home: ItemsListPage(
+          itemRepository: repository,
+          categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -34,7 +41,13 @@ void main() {
 
   testWidgets('renders an empty state when no item exists', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(home: ItemsListPage(itemRepository: FakeItemRepository(), categoryRepository: FakeCategoryRepository(),)),
+      MaterialApp(
+        home: ItemsListPage(
+          itemRepository: FakeItemRepository(),
+          categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -47,7 +60,13 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp(home: ItemsListPage(itemRepository: repository, categoryRepository: FakeCategoryRepository())),
+      MaterialApp(
+        home: ItemsListPage(
+          itemRepository: repository,
+          categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -75,6 +94,7 @@ void main() {
         home: ItemsListPage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -90,7 +110,9 @@ void main() {
     expect(find.text('Article archivé.'), findsOneWidget);
   });
 
-  testWidgets('keeps the item and displays the archive failure', (tester) async {
+  testWidgets('keeps the item and displays the archive failure', (
+    tester,
+  ) async {
     final repository = FakeItemRepository(
       currentItems: [buildCatalogItem()],
       archiveFailure: const ItemSaveFailure(),
@@ -101,6 +123,7 @@ void main() {
         home: ItemsListPage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -127,6 +150,7 @@ void main() {
         home: ItemArchivePage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -153,6 +177,7 @@ void main() {
         home: ItemArchivePage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -181,6 +206,7 @@ void main() {
         home: ItemsListPage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -189,9 +215,7 @@ void main() {
     await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
     await tester.pumpAndSettle();
 
-    final deleteButton = find.byKey(
-      const Key('permanent_delete_button'),
-    );
+    final deleteButton = find.byKey(const Key('permanent_delete_button'));
     expect(tester.widget<FilledButton>(deleteButton).onPressed, isNull);
 
     await tester.enterText(
@@ -213,9 +237,7 @@ void main() {
     final item = buildCatalogItem(status: ItemStatus.archived);
     final repository = FakeItemRepository(
       archivedItems: [item],
-      deletionResult: const ItemDeletionResult(
-        pendingStorageObjectCount: 1,
-      ),
+      deletionResult: const ItemDeletionResult(pendingStorageObjectCount: 1),
     );
 
     await tester.pumpWidget(
@@ -223,6 +245,7 @@ void main() {
         home: ItemArchivePage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );

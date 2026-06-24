@@ -4,6 +4,7 @@ import 'package:nociblack/features/items/presentation/pages/item_form_page.dart'
 
 import '../../domain/entities/catalog_item.dart';
 import '../../domain/repositories/item_repository.dart';
+import '../../domain/services/item_image_creation_service.dart';
 import '../controllers/items_list_controller.dart';
 import '../widgets/catalog_item_card.dart';
 import '../widgets/permanent_item_deletion_dialog.dart';
@@ -15,6 +16,7 @@ final class ItemsCollectionPage extends StatefulWidget {
     required this.itemRepository,
     required this.categoryRepository,
     required this.collection,
+    required this.itemImageCreationService,
     super.key,
   });
 
@@ -22,6 +24,7 @@ final class ItemsCollectionPage extends StatefulWidget {
   final ItemRepository itemRepository;
   final CategoryRepository categoryRepository;
   final ItemsCollection collection;
+  final ItemImageCreationService itemImageCreationService;
 
   @override
   State<ItemsCollectionPage> createState() => _ItemsCollectionPageState();
@@ -149,6 +152,7 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
         builder: (_) => ItemFormPage(
           categoryRepository: widget.categoryRepository,
           itemRepository: widget.itemRepository,
+          itemImageCreationService: widget.itemImageCreationService,
           itemToEdit: item,
         ),
       ),
@@ -160,13 +164,10 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
   }
 
   Widget _buildItemCard(CatalogItem item) {
-    final isArchivedCollection =
-        widget.collection == ItemsCollection.archived;
+    final isArchivedCollection = widget.collection == ItemsCollection.archived;
     final card = CatalogItemCard(
       item: item,
-      onTap: !isArchivedCollection
-          ? () => _openItemForm(item)
-          : null,
+      onTap: !isArchivedCollection ? () => _openItemForm(item) : null,
     );
 
     return Dismissible(
@@ -188,8 +189,7 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       confirmDismiss: (direction) async {
-        if (isArchivedCollection &&
-            direction == DismissDirection.startToEnd) {
+        if (isArchivedCollection && direction == DismissDirection.startToEnd) {
           await _confirmRestore(item.id);
           return false;
         }

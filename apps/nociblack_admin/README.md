@@ -17,10 +17,10 @@ Le schéma de données, les politiques RLS et Storage sont déployés sur Supaba
 Le SDK Supabase, l'authentification administrative, la lecture des articles et
 la gestion complète des catégories sont intégrés et validés sur Android. La
 création, la modification, l'archivage, la restauration en brouillon et la
-suppression définitive sécurisée des articles sont implémentées et validées
-localement. Leur validation sur le projet Supabase hébergé reste à effectuer.
-Les images et la publication des
-articles constituent les prochaines étapes.
+suppression définitive sécurisée des articles sont opérationnelles. La création
+d'un brouillon avec une à trois images JPEG est également intégrée et validée sur
+Android avec le projet Supabase hébergé. La gestion des images en modification et
+la publication constituent les prochaines étapes.
 
 ---
 
@@ -262,9 +262,10 @@ flutter analyze
 flutter test
 ```
 
-Le socle actuel compte 66 tests couvrant la configuration, les
-domaines Auth, Articles et Catégories, les contrôleurs et les transitions de
-widgets. Le démarrage Android et les lectures Supabase ont également été validés.
+Le socle actuel compte 72 tests couvrant la configuration, les domaines Auth,
+Articles et Catégories, les contrôleurs, le workflow de création des images et les
+transitions de widgets. Le démarrage Android et les échanges Supabase ont également
+été validés.
 
 ---
 
@@ -298,13 +299,20 @@ Terminé :
 * Validation réelle des transitions `DRAFT` → `ARCHIVED` → `DRAFT` avec Supabase
 * Suppression définitive depuis les listes Articles et Archives
 * File durable et reprise automatique du nettoyage des images Storage
-* Analyse statique et 66 tests automatisés
+* Sélection, aperçu et limite de trois nouvelles images
+* Compression et conversion JPEG avant upload
+* Création coordonnée du brouillon, des objets Storage et des lignes `item_images`
+* Compensation automatique du brouillon si l'enregistrement d'une image échoue
+* Validation réelle de créations avec une et deux images sur Supabase
+* Analyse statique et 72 tests automatisés
 
 À venir :
 
-* Images et publication des articles
+* Chargement et ajout d'images lors de la modification d'un article
+* Suppression et renumérotation des images existantes
+* Publication des articles
 * Validation réelle de la suppression avec images sur le projet Supabase hébergé
-* Tests des mutations via l'API Supabase Storage
+* Tests des suppressions et remplacements via l'API Supabase Storage
 
 ---
 

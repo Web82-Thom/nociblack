@@ -13,9 +13,9 @@ class ItemImagePickerSection extends StatelessWidget {
   });
 
   final int imageCount;
-  final VoidCallback onAddImagePressed;
+  final VoidCallback? onAddImagePressed;
   final List<File> selectedImages;
-  final ValueChanged<File> onRemoveSelectedImage;
+  final ValueChanged<File>? onRemoveSelectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,9 @@ class ItemImagePickerSection extends StatelessWidget {
                     .map((imageFile) {
                       return SelectedItemImagePreview(
                         imageFile: imageFile,
-                        onRemovePressed: () => onRemoveSelectedImage(imageFile),
+                        onRemovePressed: onRemoveSelectedImage == null
+                            ? null
+                            : () => onRemoveSelectedImage!(imageFile),
                       );
                     })
                     .toList(growable: false),

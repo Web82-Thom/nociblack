@@ -93,9 +93,10 @@ Admin initialise Supabase, authentifie les administrateurs actifs, restaure leur
 session et gère les catégories. Les articles peuvent être créés, modifiés,
 archivés, consultés dans les archives, restaurés en brouillon ou supprimés
 définitivement avec leurs images par un administrateur actif. Le backend Storage
-accepte les images JPEG traitées sous `items/{itemId}/{uuid}.jpg`. React est
-connecté à Supabase. Les images, la publication et le catalogue public restent à
-implémenter.
+accepte les images JPEG traitées sous `items/{itemId}/{uuid}.jpg`, et Flutter crée
+désormais les brouillons avec leurs nouvelles images. React est connecté à
+Supabase. La modification des images, la publication et le catalogue public restent
+à implémenter.
 
 ---
 

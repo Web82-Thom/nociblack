@@ -10,7 +10,7 @@ class SelectedItemImagePreview extends StatelessWidget {
   });
 
   final File imageFile;
-  final VoidCallback onRemovePressed;
+  final VoidCallback? onRemovePressed;
 
   @override
   Widget build(BuildContext context) {

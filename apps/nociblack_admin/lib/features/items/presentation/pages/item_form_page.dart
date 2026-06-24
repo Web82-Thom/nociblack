@@ -8,6 +8,7 @@ import '../../../categories/domain/repositories/category_repository.dart';
 import '../../../categories/presentation/controllers/active_categories_controller.dart';
 import '../../domain/entities/item_draft.dart';
 import '../../domain/repositories/item_repository.dart';
+import '../../domain/services/item_image_creation_service.dart';
 import '../controllers/item_form_controller.dart';
 import '../controllers/item_images_controller.dart';
 import '../widgets/item_image_picker_section.dart';
@@ -18,12 +19,14 @@ final class ItemFormPage extends StatefulWidget {
   const ItemFormPage({
     required this.categoryRepository,
     required this.itemRepository,
+    required this.itemImageCreationService,
     this.itemToEdit,
     super.key,
   });
 
   final CategoryRepository categoryRepository;
   final ItemRepository itemRepository;
+  final ItemImageCreationService itemImageCreationService;
   final CatalogItem? itemToEdit;
 
   bool get isEditing => itemToEdit != null;
@@ -56,7 +59,10 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     _categoriesController = ActiveCategoriesController(
       widget.categoryRepository,
     );
-    _itemController = ItemFormController(widget.itemRepository);
+    _itemController = ItemFormController(
+      repository: widget.itemRepository,
+      imageCreationService: widget.itemImageCreationService,
+    );
     _itemImagesController = ItemImagesController();
     _itemImagesController.initialize(const []);
     if (widget.itemToEdit case final item?) {
@@ -163,7 +169,12 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     final itemToEdit = widget.itemToEdit;
 
     final isSaved = itemToEdit == null
-        ? await _itemController.create(draft)
+        ? await _itemController.create(
+            draft,
+            imageSourcePaths: _itemImagesController.newSelectedImages
+                .map((image) => image.path)
+                .toList(growable: false),
+          )
         : await _itemController.update(itemId: itemToEdit.id, draft: draft);
 
     if (isSaved && mounted) {
@@ -362,13 +373,19 @@ final class _ItemFormPageState extends State<ItemFormPage> {
             ),
             const SizedBox(height: 24),
 
-            ItemImagePickerSection(
-              imageCount: _itemImagesController.totalImageCount,
-              selectedImages: _itemImagesController.newSelectedImages,
-              onAddImagePressed: _showImageSourcePicker,
-              onRemoveSelectedImage: _itemImagesController.removeSelectedImage,
-            ),
-            const SizedBox(height: 24),
+            if (!widget.isEditing) ...[
+              ItemImagePickerSection(
+                imageCount: _itemImagesController.totalImageCount,
+                selectedImages: _itemImagesController.newSelectedImages,
+                onAddImagePressed: _itemController.isSubmitting
+                    ? null
+                    : _showImageSourcePicker,
+                onRemoveSelectedImage: _itemController.isSubmitting
+                    ? null
+                    : _itemImagesController.removeSelectedImage,
+              ),
+              const SizedBox(height: 24),
+            ],
             TextFormField(
               key: const Key('item_price_field'),
               controller: _priceController,

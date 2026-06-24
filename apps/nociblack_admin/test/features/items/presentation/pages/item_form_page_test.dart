@@ -7,6 +7,7 @@ import 'package:nociblack/features/items/presentation/pages/item_form_page.dart'
 import '../../../../helpers/catalog_category_fixture.dart';
 import '../../../../helpers/fake_category_repository.dart';
 import '../../../../helpers/fake_item_repository.dart';
+import '../../../../helpers/fake_item_image_creation_service.dart';
 
 void main() {
   testWidgets('renders active categories in the selector', (tester) async {
@@ -17,6 +18,7 @@ void main() {
         home: ItemFormPage(
           categoryRepository: FakeCategoryRepository(categories: [category]),
           itemRepository: FakeItemRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -36,6 +38,7 @@ void main() {
         home: ItemFormPage(
           categoryRepository: FakeCategoryRepository(),
           itemRepository: FakeItemRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -54,6 +57,7 @@ void main() {
         home: ItemFormPage(
           categoryRepository: repository,
           itemRepository: FakeItemRepository(),
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -72,7 +76,9 @@ void main() {
     expect(find.textContaining('Aucune catégorie active'), findsOneWidget);
   });
 
-  testWidgets('creates a draft with normalized business values', (tester) async {
+  testWidgets('creates a draft with normalized business values', (
+    tester,
+  ) async {
     final category = buildCatalogCategory();
     final itemRepository = FakeItemRepository();
 
@@ -81,6 +87,7 @@ void main() {
         home: ItemFormPage(
           categoryRepository: FakeCategoryRepository(categories: [category]),
           itemRepository: itemRepository,
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );
@@ -111,6 +118,7 @@ void main() {
         home: ItemFormPage(
           categoryRepository: FakeCategoryRepository(categories: [category]),
           itemRepository: itemRepository,
+          itemImageCreationService: FakeItemImageCreationService(),
         ),
       ),
     );

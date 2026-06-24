@@ -10,9 +10,9 @@ class ItemImagesController extends ChangeNotifier {
   }
 
   bool validatePublishImages() {
-    return totalImageCount >= 1 &&
-        totalImageCount <= 3;
+    return totalImageCount >= 1 && totalImageCount <= 3;
   }
+
   final List<ItemImage> _existingImages = [];
 
   final List<File> _newSelectedImages = [];
