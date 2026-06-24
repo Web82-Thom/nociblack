@@ -16,7 +16,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Article test'), findsOneWidget);
-    expect(find.text('Catégorie test • SKU SKU-TEST'), findsOneWidget);
+    expect(find.text('Catégorie test • REF SKU-TEST'), findsOneWidget);
     expect(find.text('12,99 €'), findsOneWidget);
     expect(find.text('Stock : 4'), findsOneWidget);
     expect(find.text('Brouillon'), findsOneWidget);

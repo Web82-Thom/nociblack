@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/catalog_item.dart';
+import '../../domain/entities/item_draft.dart';
 import '../../domain/errors/item_failure.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../mappers/catalog_item_mapper.dart';
@@ -57,6 +58,33 @@ final class SupabaseItemRepository implements ItemRepository {
       return _mapRows(rows);
     } catch (_) {
       throw const ItemsLoadFailure();
+    }
+  }
+
+  @override
+  Future<CatalogItem> createItem(ItemDraft draft) async {
+    try {
+      final row = await _client
+          .from('items')
+          .insert({
+            'category_id': draft.categoryId,
+            'title': draft.title,
+            'slug': draft.slug,
+            'description': draft.description,
+            'price_cents': draft.priceCents,
+            'stock_quantity': draft.stockQuantity,
+            'sku': draft.sku,
+            'display_order': draft.displayOrder,
+          })
+          .select(_selection)
+          .single();
+
+      return CatalogItemMapper.fromJson(row);
+    } on PostgrestException catch (error) {
+      if (error.code == '23505') throw const ItemConflictFailure();
+      throw const ItemSaveFailure();
+    } catch (_) {
+      throw const ItemSaveFailure();
     }
   }
 

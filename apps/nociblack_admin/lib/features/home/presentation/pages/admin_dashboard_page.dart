@@ -106,6 +106,7 @@ final class AdminDashboardPage extends StatelessWidget {
       MaterialPageRoute<void>(
         builder: (_) => ItemFormPage(
           categoryRepository: categoryRepository,
+          itemRepository: itemRepository,
         ),
       ),
     );

@@ -416,12 +416,13 @@ Lecture des articles courants et archivés depuis l'application Flutter Admin
 Lecture des catégories actives depuis l'application Flutter Admin
 Création des catégories depuis l'application Flutter Admin
 Modification, archivage et réactivation des catégories depuis Flutter Admin
+Création des articles brouillons depuis l'application Flutter Admin
 ```
 
 À venir :
 
 ```text
-Création et modification des articles depuis l'application Flutter Admin
+Modification, images et publication des articles depuis Flutter Admin
 Connexion de l'application React à Supabase
 ```
 

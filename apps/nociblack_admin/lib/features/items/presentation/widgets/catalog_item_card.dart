@@ -30,7 +30,7 @@ final class CatalogItemCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text('${item.categoryName} • SKU ${item.sku}'),
+            Text('${item.categoryName} • REF ${item.sku}'),
             const SizedBox(height: 12),
             Row(
               children: [

@@ -1,4 +1,5 @@
 import '../entities/catalog_item.dart';
+import '../entities/item_draft.dart';
 
 /// Contrat de lecture du catalogue administratif.
 abstract interface class ItemRepository {
@@ -7,4 +8,6 @@ abstract interface class ItemRepository {
 
   /// Articles archivés, du plus récemment modifié au plus ancien.
   Future<List<CatalogItem>> getArchivedItems();
+
+  Future<CatalogItem> createItem(ItemDraft draft);
 }

@@ -1,98 +1,306 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/formatters/price_formatter.dart';
+import '../../../../core/formatters/slug_generator.dart';
 import '../../../categories/domain/repositories/category_repository.dart';
 import '../../../categories/presentation/controllers/active_categories_controller.dart';
+import '../../domain/entities/item_draft.dart';
+import '../../domain/repositories/item_repository.dart';
+import '../controllers/item_form_controller.dart';
 
-/// Première étape du formulaire Article : sélection d'une catégorie active.
+/// Formulaire de création d'un article brouillon.
 final class ItemFormPage extends StatefulWidget {
-  const ItemFormPage({required this.categoryRepository, super.key});
+  const ItemFormPage({
+    required this.categoryRepository,
+    required this.itemRepository,
+    super.key,
+  });
 
   final CategoryRepository categoryRepository;
+  final ItemRepository itemRepository;
 
   @override
   State<ItemFormPage> createState() => _ItemFormPageState();
 }
 
 final class _ItemFormPageState extends State<ItemFormPage> {
-  late final ActiveCategoriesController _controller;
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _slugController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _stockController = TextEditingController(text: '0');
+  final _skuController = TextEditingController();
+  final _referenceFocusNode = FocusNode();
+  final _displayOrderController = TextEditingController(text: '0');
+  late final ActiveCategoriesController _categoriesController;
+  late final ItemFormController _itemController;
+  late final Listenable _formListenable;
   String? _selectedCategoryId;
+  bool _slugManuallyEdited = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = ActiveCategoriesController(widget.categoryRepository);
-    _controller.load();
+    _categoriesController = ActiveCategoriesController(
+      widget.categoryRepository,
+    );
+    _itemController = ItemFormController(widget.itemRepository);
+    _formListenable = Listenable.merge([
+      _categoriesController,
+      _itemController,
+    ]);
+    _categoriesController.load();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _titleController.dispose();
+    _slugController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
+    _stockController.dispose();
+    _skuController.dispose();
+    _referenceFocusNode.dispose();
+    _displayOrderController.dispose();
+    _categoriesController.dispose();
+    _itemController.dispose();
     super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final description = _descriptionController.text.trim();
+    final isCreated = await _itemController.create(
+      ItemDraft(
+        categoryId: _selectedCategoryId!,
+        title: _titleController.text.trim(),
+        slug: _slugController.text.trim(),
+        description: description.isEmpty ? null : description,
+        priceCents: PriceFormatter.tryParseEuros(_priceController.text)!,
+        stockQuantity: int.parse(_stockController.text.trim()),
+        sku: _skuController.text.trim().toUpperCase(),
+        displayOrder: int.parse(_displayOrderController.text.trim()),
+      ),
+    );
+
+    if (isCreated && mounted) {
+      Navigator.of(context).pop(true);
+      return;
+    }
+
+    if (mounted) {
+      // Un conflit concerne le slug ou la référence. Le retour sur la REF est
+      // le cas de correction le plus fréquent et conserve toute la saisie.
+      _referenceFocusNode.requestFocus();
+      _skuController.selection = TextSelection.collapsed(
+        offset: _skuController.text.length,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Nouvel article')),
-      body: ListenableBuilder(
-        listenable: _controller,
-        builder: (context, child) {
-          return switch (_controller.status) {
-            ActiveCategoriesStatus.initial || ActiveCategoriesStatus.loading =>
-              const Center(child: CircularProgressIndicator()),
-            ActiveCategoriesStatus.failure => _CategoriesFailureView(
-              message: _controller.errorMessage!,
-              onRetry: _controller.load,
-            ),
-            ActiveCategoriesStatus.success
-                when _controller.categories.isEmpty =>
-              const _NoActiveCategoryView(),
-            ActiveCategoriesStatus.success => SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Informations générales',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Commencez par choisir la catégorie de l’article.',
-                  ),
-                  const SizedBox(height: 24),
-                  DropdownButtonFormField<String>(
-                    key: const Key('item_category_field'),
-                    initialValue: _selectedCategoryId,
-                    decoration: const InputDecoration(
-                      labelText: 'Catégorie',
-                      prefixIcon: Icon(Icons.category_outlined),
-                    ),
-                    items: _controller.categories.map((category) {
-                      return DropdownMenuItem(
-                        value: category.id,
-                        child: Text(category.name),
-                      );
-                    }).toList(growable: false),
-                    onChanged: (value) {
-                      setState(() => _selectedCategoryId = value);
-                    },
-                  ),
-                ],
+      body: SafeArea(
+        child: ListenableBuilder(
+          listenable: _formListenable,
+          builder: (context, child) {
+            return switch (_categoriesController.status) {
+              ActiveCategoriesStatus.initial ||
+              ActiveCategoriesStatus.loading =>
+                const Center(child: CircularProgressIndicator()),
+              ActiveCategoriesStatus.failure => _CategoriesFailureView(
+                message: _categoriesController.errorMessage!,
+                onRetry: _categoriesController.load,
               ),
-            ),
-          };
-        },
+              ActiveCategoriesStatus.success
+                  when _categoriesController.categories.isEmpty =>
+                const _NoActiveCategoryView(),
+              ActiveCategoriesStatus.success => _buildForm(context),
+            };
+          },
+        ),
       ),
     );
+  }
+
+  Widget _buildForm(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Informations générales',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 24),
+            DropdownButtonFormField<String>(
+              key: const Key('item_category_field'),
+              initialValue: _selectedCategoryId,
+              decoration: const InputDecoration(
+                labelText: 'Catégorie',
+                prefixIcon: Icon(Icons.category_outlined),
+              ),
+              items: _categoriesController.categories.map((category) {
+                return DropdownMenuItem(
+                  value: category.id,
+                  child: Text(category.name),
+                );
+              }).toList(growable: false),
+              onChanged: _itemController.isSubmitting
+                  ? null
+                  : (value) => setState(() => _selectedCategoryId = value),
+              validator: (value) => value == null
+                  ? 'Sélectionnez une catégorie.'
+                  : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('item_title_field'),
+              controller: _titleController,
+              readOnly: _itemController.isSubmitting,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(labelText: 'Titre'),
+              onChanged: (value) {
+                if (!_slugManuallyEdited) {
+                  _slugController.text = SlugGenerator.fromText(value);
+                }
+              },
+              validator: _validateRequired,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('item_slug_field'),
+              controller: _slugController,
+              readOnly: _itemController.isSubmitting,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(labelText: 'Slug'),
+              onChanged: (_) => _slugManuallyEdited = true,
+              validator: _validateSlug,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('item_description_field'),
+              controller: _descriptionController,
+              readOnly: _itemController.isSubmitting,
+              minLines: 3,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                labelText: 'Description facultative',
+                alignLabelWithHint: true,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('item_price_field'),
+              controller: _priceController,
+              readOnly: _itemController.isSubmitting,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Prix en euros',
+                suffixText: '€',
+              ),
+              validator: _validatePrice,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('item_stock_field'),
+              controller: _stockController,
+              readOnly: _itemController.isSubmitting,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(labelText: 'Stock'),
+              validator: (value) => _validateNonNegativeInteger(
+                value,
+                'Saisissez un stock positif ou nul.',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('item_sku_field'),
+              controller: _skuController,
+              focusNode: _referenceFocusNode,
+              readOnly: _itemController.isSubmitting,
+              textCapitalization: TextCapitalization.characters,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(labelText: 'REF'),
+              validator: _validateRequired,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('item_order_field'),
+              controller: _displayOrderController,
+              readOnly: _itemController.isSubmitting,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              decoration: const InputDecoration(labelText: 'Ordre d’affichage'),
+              validator: (value) => _validateNonNegativeInteger(
+                value,
+                'Saisissez un ordre positif ou nul.',
+              ),
+            ),
+            if (_itemController.errorMessage case final message?) ...[
+              const SizedBox(height: 16),
+              Text(
+                message,
+                key: const Key('item_form_error'),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                textAlign: TextAlign.center,
+              ),
+            ],
+            const SizedBox(height: 24),
+            FilledButton(
+              key: const Key('item_submit_button'),
+              onPressed: _itemController.isSubmitting ? null : _submit,
+              child: _itemController.isSubmitting
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Créer le brouillon'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String? _validateRequired(String? value) {
+    return value == null || value.trim().isEmpty
+        ? 'Ce champ est obligatoire.'
+        : null;
+  }
+
+  String? _validateSlug(String? value) {
+    final slug = value?.trim() ?? '';
+    if (slug.isEmpty) return 'Le slug est obligatoire.';
+    if (!RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(slug)) {
+      return 'Utilisez uniquement des minuscules, chiffres et tirets.';
+    }
+    return null;
+  }
+
+  String? _validatePrice(String? value) {
+    return PriceFormatter.tryParseEuros(value ?? '') == null
+        ? 'Saisissez un prix valide avec deux décimales maximum.'
+        : null;
+  }
+
+  String? _validateNonNegativeInteger(String? value, String message) {
+    final number = int.tryParse(value?.trim() ?? '');
+    return number == null || number < 0 ? message : null;
   }
 }
 
 final class _CategoriesFailureView extends StatelessWidget {
-  const _CategoriesFailureView({
-    required this.message,
-    required this.onRetry,
-  });
+  const _CategoriesFailureView({required this.message, required this.onRetry});
 
   final String message;
   final Future<void> Function() onRetry;
@@ -100,21 +308,16 @@ final class _CategoriesFailureView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.cloud_off_outlined, size: 48),
-            const SizedBox(height: 16),
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton.tonal(
-              onPressed: onRetry,
-              child: const Text('Réessayer'),
-            ),
-          ],
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(message, textAlign: TextAlign.center),
+          const SizedBox(height: 16),
+          FilledButton.tonal(
+            onPressed: onRetry,
+            child: const Text('Réessayer'),
+          ),
+        ],
       ),
     );
   }
