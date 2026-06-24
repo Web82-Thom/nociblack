@@ -98,19 +98,22 @@ begin
   values
     (
       admin_item_id,
-      'item-images/' || admin_item_id || '/image_1.webp',
+      'item-images/items/' || admin_item_id
+        || '/00000000-0000-4000-8000-000000000001.jpg',
       1,
       true
     ),
     (
       admin_item_id,
-      'item-images/' || admin_item_id || '/image_2.webp',
+      'item-images/items/' || admin_item_id
+        || '/00000000-0000-4000-8000-000000000002.jpg',
       2,
       false
     ),
     (
       super_admin_item_id,
-      'item-images/' || super_admin_item_id || '/image_1.webp',
+      'item-images/items/' || super_admin_item_id
+        || '/00000000-0000-4000-8000-000000000001.jpg',
       1,
       true
     );
@@ -230,7 +233,7 @@ begin
   select array_agg(job.job_id order by job.job_id)
   into pending_job_ids
   from public.get_pending_item_storage_deletions(100) as job
-  where job.object_name like target_item_id::text || '/%';
+    where job.object_name like 'items/' || target_item_id::text || '/%';
 
   if cardinality(pending_job_ids) <> 2 then
     raise exception 'TEST FAILED: ADMIN cannot resume pending Storage cleanup';
@@ -241,7 +244,7 @@ begin
   if exists (
     select 1
     from public.get_pending_item_storage_deletions(100) as job
-    where job.object_name like target_item_id::text || '/%'
+    where job.object_name like 'items/' || target_item_id::text || '/%'
   ) then
     raise exception 'TEST FAILED: ADMIN cannot complete Storage cleanup jobs';
   end if;

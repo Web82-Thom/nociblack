@@ -93,7 +93,8 @@ begin
   )
   values (
     nominal_item_id,
-    '  item-images/' || nominal_item_id || '/image_1.webp  ',
+    '  item-images/items/' || nominal_item_id
+      || '/00000000-0000-4000-8000-000000000001.jpg  ',
     1,
     true
   );
@@ -119,7 +120,8 @@ begin
     select 1
       from public.item_images
      where item_id = nominal_item_id
-       and image_url = 'item-images/' || nominal_item_id || '/image_1.webp'
+       and image_url = 'item-images/items/' || nominal_item_id
+         || '/00000000-0000-4000-8000-000000000001.jpg'
        and is_primary
   ) then
     raise exception 'TEST FAILED: image reference normalization';
@@ -217,8 +219,9 @@ begin
   )
   values (
     no_image_item_id,
-    'item-images/' || no_image_item_id || '/image_1.webp',
-    1,
+    'item-images/items/' || no_image_item_id
+      || '/00000000-0000-4000-8000-000000000001.jpg',
+    2,
     false
   );
 
@@ -263,7 +266,8 @@ begin
   )
   values (
     inactive_category_item_id,
-    'item-images/' || inactive_category_item_id || '/image_1.webp',
+    'item-images/items/' || inactive_category_item_id
+      || '/00000000-0000-4000-8000-000000000001.jpg',
     1,
     true
   );
@@ -297,12 +301,13 @@ begin
     )
     values (
       nominal_item_id,
-      'item-images/' || nominal_item_id || '/image_2.webp',
+      'item-images/items/' || nominal_item_id
+        || '/00000000-0000-4000-8000-000000000002.jpg',
       2,
       true
     );
   exception
-    when unique_violation then
+    when unique_violation or check_violation then
       rejection_detected := true;
   end;
 
@@ -319,13 +324,15 @@ begin
   values
     (
       nominal_item_id,
-      'item-images/' || nominal_item_id || '/image_2.webp',
+      'item-images/items/' || nominal_item_id
+        || '/00000000-0000-4000-8000-000000000002.jpg',
       2,
       false
     ),
     (
       nominal_item_id,
-      'item-images/' || nominal_item_id || '/image_3.webp',
+      'item-images/items/' || nominal_item_id
+        || '/00000000-0000-4000-8000-000000000003.jpg',
       3,
       false
     );
@@ -341,7 +348,8 @@ begin
     )
     values (
       nominal_item_id,
-      'item-images/' || nominal_item_id || '/image_4.webp',
+      'item-images/items/' || nominal_item_id
+        || '/00000000-0000-4000-8000-000000000004.jpg',
       4,
       false
     );

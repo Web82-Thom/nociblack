@@ -290,19 +290,21 @@ Structure :
 
 ```text
 item-images/
-└── {item_id}/
-    ├── image_1.webp
-    ├── image_2.webp
-    └── image_3.webp
+└── items/
+    └── {item_id}/
+        └── {image_id}.jpg
 ```
 
 Contraintes :
 
 ```text
 Maximum 3 images
-Maximum 2 Mo par image
-Format autorisé : WebP
+Maximum 5 Mo par image
+Format autorisé : JPEG (`image/jpeg`)
 ```
+
+Le chemin est validé par les policies Storage et par une contrainte sur
+`item_images.image_url`. Le nom UUID reste stable lorsque `display_order` change.
 
 ---
 

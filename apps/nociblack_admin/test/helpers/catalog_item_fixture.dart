@@ -20,6 +20,7 @@ CatalogItem buildCatalogItem({
     displayOrder: 0,
     createdAt: DateTime.utc(2026, 6, 24, 8),
     updatedAt: DateTime.utc(2026, 6, 24, 9),
-    primaryImagePath: 'item-images/item-id/image_1.webp',
+    primaryImagePath:
+        'item-images/items/item-id/00000000-0000-4000-8000-000000000001.jpg',
   );
 }

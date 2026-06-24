@@ -88,9 +88,14 @@ invalides, si la catégorie est inactive ou si aucune image n'est associée à l
 - Une position est unique dans un même article.
 - Une seule image peut être principale.
 - Un article publié possède exactement une image principale.
+- L'image en position 1 est toujours l'image principale.
 - Une image ne peut appartenir qu'à un seul article.
 - Les images publiques suivent les règles de visibilité de leur article.
-- Le format cible est WebP et la taille maximale est de 2 Mo.
+- Les sources JPG, JPEG, PNG, WebP, HEIC et HEIF sont converties en JPEG.
+- La largeur maximale est de 1200 pixels, la qualité JPEG de 80 % et la taille
+  maximale du résultat stocké de 5 Mo.
+- Le chemin stable suit `item-images/items/{item_id}/{image_id}.jpg` et ne dépend
+  jamais de l'ordre d'affichage.
 
 La base de données doit empêcher la publication d'un article sans image. Ce contrôle
 ne doit pas dépendre uniquement de l'application Flutter.
@@ -146,6 +151,8 @@ Les décisions suivantes sont définitives pour la V1 :
 7. le retrait d'une image supprime physiquement le fichier Storage correspondant.
 8. la suppression définitive d'un article est réservée aux administrateurs actifs et
    utilise une file durable pour garantir la reprise du nettoyage Storage.
+9. les images d'articles sont stockées exclusivement en JPEG sous un nom UUID,
+   après redimensionnement et compression obligatoires côté Flutter.
 
 Ces décisions servent de référence à la conception et au contrôle des migrations
 SQL.

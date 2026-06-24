@@ -69,7 +69,8 @@ begin
   )
   values (
     fixture_draft_item_id,
-    'item-images/' || fixture_draft_item_id || '/image_1.webp',
+    'item-images/items/' || fixture_draft_item_id
+      || '/00000000-0000-4000-8000-000000000001.jpg',
     1,
     true
   );
@@ -228,7 +229,8 @@ begin
   )
   values (
     admin_item_id,
-    'item-images/' || admin_item_id || '/image_1.webp',
+    'item-images/items/' || admin_item_id
+      || '/00000000-0000-4000-8000-000000000001.jpg',
     1,
     true
   );
@@ -255,7 +257,8 @@ begin
   )
   values (
     admin_item_id,
-    'item-images/' || admin_item_id || '/image_2.webp',
+    'item-images/items/' || admin_item_id
+      || '/00000000-0000-4000-8000-000000000002.jpg',
     2,
     false
   );

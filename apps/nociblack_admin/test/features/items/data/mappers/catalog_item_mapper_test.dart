@@ -20,12 +20,14 @@ void main() {
         'categories': {'name': 'Catégorie test'},
         'item_images': [
           {
-            'image_url': 'item-images/item-id/image_2.webp',
+            'image_url':
+                'item-images/items/item-id/00000000-0000-4000-8000-000000000002.jpg',
             'is_primary': false,
             'display_order': 2,
           },
           {
-            'image_url': 'item-images/item-id/image_1.webp',
+            'image_url':
+                'item-images/items/item-id/00000000-0000-4000-8000-000000000001.jpg',
             'is_primary': true,
             'display_order': 1,
           },
@@ -36,7 +38,10 @@ void main() {
       expect(item.categoryName, 'Catégorie test');
       expect(item.status, ItemStatus.published);
       expect(item.priceCents, 1299);
-      expect(item.primaryImagePath, 'item-images/item-id/image_1.webp');
+      expect(
+        item.primaryImagePath,
+        'item-images/items/item-id/00000000-0000-4000-8000-000000000001.jpg',
+      );
       expect(item.createdAt, DateTime.utc(2026, 6, 24, 8));
     });
 

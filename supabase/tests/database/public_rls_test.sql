@@ -92,7 +92,8 @@ begin
   )
   values (
     public_item_id,
-    'item-images/' || public_item_id || '/image_1.webp',
+    'item-images/items/' || public_item_id
+      || '/00000000-0000-4000-8000-000000000001.jpg',
     1,
     true
   )
@@ -106,7 +107,8 @@ begin
   )
   values (
     draft_item_id,
-    'item-images/' || draft_item_id || '/image_1.webp',
+    'item-images/items/' || draft_item_id
+      || '/00000000-0000-4000-8000-000000000001.jpg',
     1,
     true
   )
@@ -120,7 +122,8 @@ begin
   )
   values (
     hidden_item_id,
-    'item-images/' || hidden_item_id || '/image_1.webp',
+    'item-images/items/' || hidden_item_id
+      || '/00000000-0000-4000-8000-000000000001.jpg',
     1,
     true
   )

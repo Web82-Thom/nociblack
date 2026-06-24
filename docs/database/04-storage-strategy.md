@@ -3,8 +3,9 @@
 ## 1. Objet
 
 Ce document décrit l'organisation, les formats et les permissions des médias
-Supabase Storage implémentés pour NociBlacK V1. La migration correspondante est
-`supabase/migrations/20260623130453_create_storage_configuration.sql`.
+Supabase Storage implémentés pour NociBlacK V1. Les migrations correspondantes sont
+`supabase/migrations/20260623130453_create_storage_configuration.sql` et
+`supabase/migrations/20260624201028_adopt_jpeg_item_image_paths.sql`.
 
 Les logos intégrés à l'application Flutter sont placés localement dans :
 
@@ -24,10 +25,9 @@ Stocker les images associées aux articles du catalogue.
 
 ```text
 item-images/
-└── {item_id}/
-    ├── image_1.webp
-    ├── image_2.webp
-    └── image_3.webp
+└── items/
+    └── {item_id}/
+        └── {image_id}.jpg
 ```
 
 `item_id` correspond obligatoirement à un article existant.
@@ -35,11 +35,11 @@ item-images/
 ### Contraintes
 
 - maximum trois images par article ;
-- format cible : WebP ;
-- taille maximale : 2 Mo par fichier ;
+- format stocké : JPEG exclusivement ;
+- taille maximale : 5 Mo par fichier après traitement ;
 - positions autorisées : 1, 2 et 3 ;
-- une seule image principale définie dans `item_images` ;
-- nom de fichier déterministe après validation et traitement de l'image.
+- la position 1 est toujours l'image principale dans `item_images` ;
+- nom de fichier UUID immuable, indépendant de l'ordre d'affichage.
 
 La limite de trois images doit être garantie par la base de données et pas seulement
 par l'interface Flutter. La limite de taille doit aussi être configurée au niveau du
@@ -105,7 +105,15 @@ Le service média devra traiter l'opération comme un workflow cohérent :
 
 La base de données reste la source de vérité pour l'ordre et l'image principale.
 La colonne `item_images.image_url` conserve uniquement une référence Storage stable ;
-elle ne contient jamais d'URL signée temporaire.
+elle ne contient jamais d'URL signée temporaire. Sa forme canonique est :
+
+```text
+item-images/items/{item_id}/{image_id}.jpg
+```
+
+La contrainte PostgreSQL vérifie le bucket, le format du chemin et l'appartenance
+au bon article. Les policies Storage appliquent la même convention sur le nom
+interne `items/{item_id}/{image_id}.jpg`.
 
 ## 5. Remplacement et suppression des images
 
@@ -149,9 +157,11 @@ La suppression définitive d'un article utilise dès maintenant une file durable
 Avant l'upload, l'application Android devra :
 
 - vérifier qu'il reste une position disponible ;
-- contrôler le type et la taille ;
-- redimensionner l'image si nécessaire ;
-- convertir ou compresser vers WebP ;
+- accepter comme sources JPG, JPEG, PNG, WebP, HEIC et HEIF ;
+- contrôler le type et la taille de la source ;
+- redimensionner à 1200 pixels de largeur maximale ;
+- convertir obligatoirement en JPEG avec une qualité de 80 % ;
+- vérifier que le résultat JPEG ne dépasse pas 5 Mo ;
 - afficher un aperçu ;
 - demander une confirmation avant remplacement.
 
@@ -161,7 +171,8 @@ contraintes Supabase.
 ## 8. Implémentation et validation
 
 Les buckets `item-images` et `brand-assets` ainsi que leurs politiques RLS sont
-déployés sur le projet Supabase hébergé.
+déployés sur le projet Supabase hébergé. L'architecture JPEG à chemins UUID a été
+validée par reset local, tests transactionnels, lint local et lint distant.
 
 Le test transactionnel est disponible dans :
 

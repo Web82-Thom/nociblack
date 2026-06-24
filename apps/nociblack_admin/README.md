@@ -195,16 +195,19 @@ webp
 jpg
 jpeg
 png
+heic
+heif
 ```
 
 Les images d'articles sont converties et envoyées dans `item-images` au format
-WebP. Les assets de marque acceptent PNG et WebP.
+JPEG, avec une largeur maximale de 1200 pixels et une qualité de 80 %. Les assets
+de marque acceptent PNG et WebP.
 
 Limites :
 
 ```text
 3 images maximum par article
-2 Mo maximum par image
+5 Mo maximum par image JPEG traitée
 ```
 
 ---

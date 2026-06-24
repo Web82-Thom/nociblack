@@ -41,6 +41,17 @@ begin
     raise exception 'TEST SETUP FAILED: active ADMIN profile missing';
   end if;
 
+  if not exists (
+    select 1
+    from storage.buckets as bucket
+    where bucket.id = 'item-images'
+      and not bucket.public
+      and bucket.file_size_limit = 5242880
+      and bucket.allowed_mime_types = array['image/jpeg']
+  ) then
+    raise exception 'TEST FAILED: item-images bucket is not JPEG/5 MB/private';
+  end if;
+
   -- Supabase interdit les UPDATE/DELETE directs sur storage.objects. Leur
   -- présence est contrôlée ici, puis leur comportement sera testé via l’API
   -- Storage lors de l’intégration des clients.
@@ -102,10 +113,22 @@ begin
   )
   returning id into draft_item_id;
 
-  published_object_name := published_item_id || '/image_1.webp';
-  draft_object_name := draft_item_id || '/image_1.webp';
+  published_object_name := 'items/' || published_item_id
+    || '/00000000-0000-4000-8000-000000000001.jpg';
+  draft_object_name := 'items/' || draft_item_id
+    || '/00000000-0000-4000-8000-000000000001.jpg';
   valid_brand_name := 'public/test_' || run_token || '.png';
   invalid_brand_name := 'private/test_' || run_token || '.png';
+
+  if not private.is_valid_item_image_object_name(published_object_name) then
+    raise exception 'TEST FAILED: canonical JPEG item path rejected';
+  end if;
+
+  if private.is_valid_item_image_object_name(
+    published_item_id || '/image_1.webp'
+  ) then
+    raise exception 'TEST FAILED: legacy WebP item path accepted';
+  end if;
 
   insert into public.item_images (
     item_id,
@@ -156,7 +179,7 @@ begin
     )
     values (
       draft_item_id,
-      'item-images/' || draft_item_id || '/wrong-name.webp',
+      'item-images/items/' || draft_item_id || '/not-a-uuid.jpg',
       2,
       false
     );
@@ -167,6 +190,31 @@ begin
 
   if not rejection_detected then
     raise exception 'TEST FAILED: invalid item_images path accepted';
+  end if;
+
+  rejection_detected := false;
+
+  begin
+    insert into public.item_images (
+      item_id,
+      image_url,
+      display_order,
+      is_primary
+    )
+    values (
+      draft_item_id,
+      'item-images/items/' || published_item_id
+        || '/00000000-0000-4000-8000-000000000009.jpg',
+      2,
+      false
+    );
+  exception
+    when check_violation then
+      rejection_detected := true;
+  end;
+
+  if not rejection_detected then
+    raise exception 'TEST FAILED: image path can reference another item';
   end if;
 
   perform set_config(
@@ -331,7 +379,8 @@ begin
     raise exception 'TEST FAILED: ADMIN cannot read draft item images';
   end if;
 
-  admin_object_name := draft_item_id || '/image_2.webp';
+  admin_object_name := 'items/' || draft_item_id
+    || '/00000000-0000-4000-8000-000000000002.jpg';
 
   insert into storage.objects (bucket_id, name)
   values ('item-images', admin_object_name);
@@ -351,7 +400,7 @@ begin
     insert into storage.objects (bucket_id, name)
     values (
       'item-images',
-      draft_item_id || '/image_4.webp'
+      'items/' || draft_item_id || '/not-a-uuid.jpg'
     );
   exception
     when insufficient_privilege then
@@ -504,7 +553,8 @@ begin
     insert into storage.objects (bucket_id, name)
     values (
       'item-images',
-      draft_item_id || '/image_2.webp'
+      'items/' || draft_item_id
+        || '/00000000-0000-4000-8000-000000000002.jpg'
     );
   exception
     when insufficient_privilege then

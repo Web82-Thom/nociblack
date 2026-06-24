@@ -78,10 +78,13 @@
 - [x] Supprimer les références d'images et reprendre durablement le nettoyage Storage
 - [x] Ajouter la suppression depuis les listes Articles et Archives
 - [x] Valider localement les règles SQL et les 66 tests Flutter
+- [x] Appliquer la migration de suppression au projet Supabase hébergé
+- [x] Adopter les chemins `items/{itemId}/{uuid}.jpg` et le bucket JPEG de 5 Mo
+- [x] Aligner les tests SQL et les fixtures Flutter sur l'architecture JPEG
+- [x] Valider le reset local, les cinq tests SQL et les lints local et distant
 
 ## À venir
 
-- [ ] Appliquer la migration de suppression au projet Supabase hébergé
 - [ ] Valider réellement la suppression d'un article avec ses images Storage
 - [ ] Implémenter la gestion des images et la publication des articles
 - [ ] Tester les mutations Storage depuis l'application Flutter
