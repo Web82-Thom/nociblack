@@ -120,6 +120,75 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     }
   }
 
+  Future<void> _confirmArchive() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Archivage'),
+          content: const Text(
+            'Êtes-vous sûr de vouloir archiver cet article ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Archiver'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    final success = await _itemController.archive(widget.itemToEdit!.id);
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pop(true);
+    }
+  }
+
+  Future<void> _confirmDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Suppression'),
+          content: const Text(
+            'Êtes-vous sûr de vouloir supprimer cet article ?\n\n'
+            'Cette action est irréversible.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Supprimer'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    final success = await _itemController.delete(widget.itemToEdit!.id);
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pop(true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,12 +196,13 @@ final class _ItemFormPageState extends State<ItemFormPage> {
         title: Text(widget.isEditing ? 'Modifier l’article' : 'Nouvel article'),
         actions: widget.isEditing
             ? [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.archive)),
                 IconButton(
-                  onPressed: () {
-                    // TODO: suppression
-                  },
-                  icon: const Icon(Icons.delete, color: Colors.red,),
+                  onPressed: _confirmArchive,
+                  icon: Icon(Icons.archive),
+                ),
+                IconButton(
+                  onPressed: _confirmDelete,
+                  icon: const Icon(Icons.delete, color: Colors.red),
                 ),
               ]
             : [],

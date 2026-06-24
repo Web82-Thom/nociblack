@@ -55,4 +55,42 @@ final class ItemFormController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> archive(String itemId) async {
+    if (_isSubmitting) return false;
+
+    _isSubmitting = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _repository.archiveItem(itemId);
+      return true;
+    } on ItemFailure catch (failure) {
+      _errorMessage = failure.message;
+      return false;
+    } finally {
+      _isSubmitting = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> delete(String itemId) async {
+    if (_isSubmitting) return false;
+
+    _isSubmitting = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _repository.deleteItem(itemId);
+      return true;
+    } on ItemFailure catch (failure) {
+      _errorMessage = failure.message;
+      return false;
+    } finally {
+      _isSubmitting = false;
+      notifyListeners();
+    }
+  }
 }
