@@ -4,6 +4,7 @@ import 'package:nociblack/app/app.dart';
 import 'package:nociblack/features/auth/domain/errors/auth_failure.dart';
 
 import 'helpers/fake_auth_repository.dart';
+import 'helpers/fake_category_repository.dart';
 import 'helpers/fake_item_repository.dart';
 
 void main() {
@@ -16,6 +17,7 @@ void main() {
     await tester.pumpWidget(
       NociBlackAdminApp(
         authRepository: repository,
+        categoryRepository: FakeCategoryRepository(),
         itemRepository: FakeItemRepository(),
       ),
     );
@@ -40,6 +42,7 @@ void main() {
     await tester.pumpWidget(
       NociBlackAdminApp(
         authRepository: repository,
+        categoryRepository: FakeCategoryRepository(),
         itemRepository: FakeItemRepository(),
       ),
     );
@@ -76,6 +79,7 @@ void main() {
     await tester.pumpWidget(
       NociBlackAdminApp(
         authRepository: repository,
+        categoryRepository: FakeCategoryRepository(),
         itemRepository: FakeItemRepository(),
       ),
     );

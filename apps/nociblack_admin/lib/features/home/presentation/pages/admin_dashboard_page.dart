@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../auth/domain/entities/admin_profile.dart';
+import '../../../categories/domain/repositories/category_repository.dart';
 import '../../../items/domain/repositories/item_repository.dart';
 import '../../../items/presentation/pages/item_form_page.dart';
 import '../../../items/presentation/pages/items_history_page.dart';
@@ -12,12 +13,14 @@ final class AdminDashboardPage extends StatelessWidget {
   const AdminDashboardPage({
     required this.profile,
     required this.onSignOut,
+    required this.categoryRepository,
     required this.itemRepository,
     super.key,
   });
 
   final AdminProfile profile;
   final Future<void> Function() onSignOut;
+  final CategoryRepository categoryRepository;
   final ItemRepository itemRepository;
 
   @override
@@ -92,7 +95,13 @@ final class AdminDashboardPage extends StatelessWidget {
   void _openCreateItem(BuildContext context) {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const ItemFormPage()));
+    ).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ItemFormPage(
+          categoryRepository: categoryRepository,
+        ),
+      ),
+    );
   }
 
   void _openItemsHistory(BuildContext context) {

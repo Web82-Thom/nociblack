@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nociblack/features/auth/domain/entities/admin_profile.dart';
 import 'package:nociblack/features/home/presentation/pages/admin_dashboard_page.dart';
 
+import '../../../../helpers/fake_category_repository.dart';
 import '../../../../helpers/fake_item_repository.dart';
 
 void main() {
@@ -20,6 +21,7 @@ void main() {
         home: AdminDashboardPage(
           profile: profile,
           onSignOut: () async {},
+          categoryRepository: FakeCategoryRepository(),
           itemRepository: FakeItemRepository(),
         ),
       ),
