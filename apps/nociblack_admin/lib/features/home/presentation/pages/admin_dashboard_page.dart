@@ -91,7 +91,7 @@ final class AdminDashboardPage extends StatelessWidget {
   void _openItemsHistory(BuildContext context) {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const ItemsHistoriesPage()));
+    ).push(MaterialPageRoute<void>(builder: (_) => const ItemsHistoryPage()));
   }
 }
 
