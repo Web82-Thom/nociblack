@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nociblack/features/auth/domain/entities/admin_profile.dart';
 import 'package:nociblack/features/home/presentation/pages/admin_dashboard_page.dart';
+import 'package:nociblack/features/items/domain/entities/catalog_item.dart';
 
+import '../../../../helpers/catalog_item_fixture.dart';
 import '../../../../helpers/fake_category_repository.dart';
 import '../../../../helpers/fake_item_repository.dart';
 
@@ -15,14 +17,17 @@ void main() {
     firstName: 'Admin',
   );
 
-  Future<void> pumpDashboard(WidgetTester tester) {
+  Future<void> pumpDashboard(
+    WidgetTester tester, {
+    FakeItemRepository? itemRepository,
+  }) {
     return tester.pumpWidget(
       MaterialApp(
         home: AdminDashboardPage(
           profile: profile,
           onSignOut: () async {},
           categoryRepository: FakeCategoryRepository(),
-          itemRepository: FakeItemRepository(),
+          itemRepository: itemRepository ?? FakeItemRepository(),
         ),
       ),
     );
@@ -44,6 +49,22 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.widgetWithText(AppBar, 'Historique'), findsOneWidget);
+  });
+
+  testWidgets('opens archived items from the dashboard', (tester) async {
+    final repository = FakeItemRepository(
+      archivedItems: [buildCatalogItem(status: ItemStatus.archived)],
+    );
+    await pumpDashboard(tester, itemRepository: repository);
+
+    await tester.tap(find.text('Archive'));
+    await tester.pumpAndSettle();
+
+    expect(find.widgetWithText(AppBar, 'Archives'), findsOneWidget);
+    expect(find.text('Article test'), findsOneWidget);
+    final dismissible = tester.widget<Dismissible>(find.byType(Dismissible));
+    expect(dismissible.direction, DismissDirection.startToEnd);
+    expect(repository.archivedCalls, 1);
   });
 
   testWidgets('opens categories management from the dashboard', (tester) async {

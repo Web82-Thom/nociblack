@@ -23,3 +23,9 @@ final class ItemSaveFailure extends ItemFailure {
   const ItemSaveFailure()
     : super('Impossible d’enregistrer l’article pour le moment.');
 }
+
+/// La restauration d'un article archivé vers l'état brouillon a échoué.
+final class ItemRestoreFailure extends ItemFailure {
+  const ItemRestoreFailure()
+    : super('Impossible de restaurer l’article pour le moment.');
+}

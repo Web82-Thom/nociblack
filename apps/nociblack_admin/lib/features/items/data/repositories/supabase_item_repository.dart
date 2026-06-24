@@ -123,4 +123,39 @@ final class SupabaseItemRepository implements ItemRepository {
   List<CatalogItem> _mapRows(List<Map<String, dynamic>> rows) {
     return List.unmodifiable(rows.map(CatalogItemMapper.fromJson));
   }
+
+  @override
+  Future<void> archiveItem(String itemId) async {
+    try {
+      await _client
+          .from('items')
+          .update({
+            'status': 'ARCHIVED',
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          })
+          .eq('id', itemId)
+          .select('id')
+          .single();
+    } catch (_) {
+      throw const ItemSaveFailure();
+    }
+  }
+
+  @override
+  Future<void> restoreItem(String itemId) async {
+    try {
+      await _client
+          .from('items')
+          .update({
+            'status': 'DRAFT',
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          })
+          .eq('id', itemId)
+          .eq('status', 'ARCHIVED')
+          .select('id')
+          .single();
+    } catch (_) {
+      throw const ItemRestoreFailure();
+    }
+  }
 }

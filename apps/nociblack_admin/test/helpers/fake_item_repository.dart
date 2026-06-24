@@ -10,6 +10,8 @@ final class FakeItemRepository implements ItemRepository {
     this.currentFailure,
     this.archivedFailure,
     this.saveFailure,
+    this.archiveFailure,
+    this.restoreFailure,
   });
 
   List<CatalogItem> currentItems;
@@ -17,11 +19,17 @@ final class FakeItemRepository implements ItemRepository {
   ItemFailure? currentFailure;
   ItemFailure? archivedFailure;
   ItemFailure? saveFailure;
+  ItemFailure? archiveFailure;
+  ItemFailure? restoreFailure;
   ItemDraft? lastCreatedDraft;
   int currentCalls = 0;
   int archivedCalls = 0;
   ItemDraft? lastUpdatedDraft;
   String? lastUpdatedItemId;
+  String? lastArchivedItemId;
+  int archiveCalls = 0;
+  String? lastRestoredItemId;
+  int restoreCalls = 0;
 
   @override
   Future<List<CatalogItem>> getCurrentItems() async {
@@ -93,5 +101,48 @@ final class FakeItemRepository implements ItemRepository {
     ];
 
     return updatedItem;
+  }
+
+  @override
+  Future<void> archiveItem(String itemId) async {
+    archiveCalls++;
+    if (archiveFailure case final failure?) throw failure;
+
+    lastArchivedItemId = itemId;
+    currentItems = [
+      for (final item in currentItems)
+        if (item.id != itemId) item,
+    ];
+  }
+
+  @override
+  Future<void> restoreItem(String itemId) async {
+    restoreCalls++;
+    if (restoreFailure case final failure?) throw failure;
+
+    final archivedItem = archivedItems.firstWhere((item) => item.id == itemId);
+    lastRestoredItemId = itemId;
+    archivedItems = [
+      for (final item in archivedItems)
+        if (item.id != itemId) item,
+    ];
+    currentItems = [
+      ...currentItems,
+      CatalogItem(
+        id: archivedItem.id,
+        categoryId: archivedItem.categoryId,
+        categoryName: archivedItem.categoryName,
+        title: archivedItem.title,
+        description: archivedItem.description,
+        priceCents: archivedItem.priceCents,
+        stockQuantity: archivedItem.stockQuantity,
+        sku: archivedItem.sku,
+        status: ItemStatus.draft,
+        displayOrder: archivedItem.displayOrder,
+        createdAt: archivedItem.createdAt,
+        updatedAt: DateTime.utc(2026, 6, 24, 12),
+        primaryImagePath: archivedItem.primaryImagePath,
+      ),
+    ];
   }
 }

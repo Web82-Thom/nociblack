@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nociblack/features/categories/domain/repositories/category_repository.dart';
 import 'package:nociblack/features/items/presentation/pages/item_form_page.dart';
 
+import '../../domain/entities/catalog_item.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../controllers/items_list_controller.dart';
 import '../widgets/catalog_item_card.dart';
@@ -44,6 +45,180 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
     super.dispose();
   }
 
+  Future<void> _confirmArchive(String itemId) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Archivage'),
+          content: const Text(
+            'Êtes-vous sûr de vouloir archiver cet article ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Oui'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final wasArchived = await _controller.archiveItem(itemId);
+    if (!mounted) return;
+
+    final message = wasArchived
+        ? 'Article archivé.'
+        : _controller.errorMessage ?? 'Impossible d’archiver l’article.';
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _confirmRestore(String itemId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Restauration'),
+          content: const Text(
+            'Restaurer cet article ? Il redeviendra un brouillon.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Restaurer'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final wasRestored = await _controller.restoreItem(itemId);
+    if (!mounted) return;
+
+    final message = wasRestored
+        ? 'Article restauré en brouillon.'
+        : _controller.errorMessage ?? 'Impossible de restaurer l’article.';
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _confirmDelete(String itemId) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Suppression'),
+          content: const Text(
+            'La suppression définitive des articles est désactivée pour le moment.\n\n'
+            'Utilisez plutôt l’archivage.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Supprimer'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      // TODO: deleteItem()
+      debugPrint('Article à supprimer : $itemId');
+    }
+  }
+
+  Future<void> _openItemForm(CatalogItem item) async {
+    final wasSaved = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => ItemFormPage(
+          categoryRepository: widget.categoryRepository,
+          itemRepository: widget.itemRepository,
+          itemToEdit: item,
+        ),
+      ),
+    );
+
+    if (wasSaved == true) {
+      await _controller.load();
+    }
+  }
+
+  Widget _buildItemCard(CatalogItem item) {
+    final isArchivedCollection =
+        widget.collection == ItemsCollection.archived;
+    final card = CatalogItemCard(
+      item: item,
+      onTap: !isArchivedCollection
+          ? () => _openItemForm(item)
+          : null,
+    );
+
+    return Dismissible(
+      key: ValueKey(item.id),
+      direction: isArchivedCollection
+          ? DismissDirection.startToEnd
+          : DismissDirection.horizontal,
+      background: Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 24),
+        color: isArchivedCollection ? Colors.green : Colors.orange,
+        child: Icon(
+          isArchivedCollection ? Icons.restore : Icons.archive,
+          color: Colors.white,
+        ),
+      ),
+      secondaryBackground: isArchivedCollection
+          ? null
+          : Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 24),
+              color: Colors.red,
+              child: const Icon(Icons.delete, color: Colors.white),
+            ),
+      confirmDismiss: (direction) async {
+        if (isArchivedCollection) {
+          await _confirmRestore(item.id);
+          return false;
+        }
+
+        if (direction == DismissDirection.startToEnd) {
+          await _confirmArchive(item.id);
+          return false;
+        }
+
+        if (direction == DismissDirection.endToStart) {
+          await _confirmDelete(item.id);
+          return false;
+        }
+
+        return false;
+      },
+      child: card,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,30 +242,8 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
                 padding: const EdgeInsets.all(16),
                 itemCount: _controller.items.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final item = _controller.items[index];
-
-                  return CatalogItemCard(
-                    item: item,
-                    onTap: () async {
-                      final wasSaved = await Navigator.of(context).push<bool>(
-                        MaterialPageRoute<bool>(
-                          builder: (_) => ItemFormPage(
-                            categoryRepository: widget.categoryRepository,
-                            itemRepository: widget.itemRepository,
-                            itemToEdit: item,
-                          ),
-                        ),
-                      );
-
-                      if (wasSaved == true) {
-                        await _controller.load();
-                      }
-                    },
-                    itemRepository: widget.itemRepository,
-                    categoryRepository: widget.categoryRepository,
-                  );
-                },
+                itemBuilder: (_, index) =>
+                    _buildItemCard(_controller.items[index]),
               ),
             ),
           };

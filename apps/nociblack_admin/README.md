@@ -16,8 +16,9 @@ L'application permet aux administrateurs de gérer :
 Le schéma de données, les politiques RLS et Storage sont déployés sur Supabase.
 Le SDK Supabase, l'authentification administrative, la lecture des articles et
 la gestion complète des catégories sont intégrés et validés sur Android. La
-création des brouillons est également opérationnelle. La modification, les
-images et la publication des articles constituent les prochaines étapes.
+création, la modification, l'archivage et la restauration en brouillon des
+articles sont également opérationnels. Les images et la publication des
+articles constituent les prochaines étapes.
 
 ---
 
@@ -35,6 +36,7 @@ images et la publication des articles constituent les prochaines étapes.
 * Création d'articles
 * Modification d'articles
 * Archivage d'articles
+* Restauration des articles archivés en brouillon
 * Gestion du stock
 * Gestion du prix
 * Gestion du SKU
@@ -283,12 +285,15 @@ Terminé :
 * Création des articles brouillons
 * Gestion du prix en centimes et de la REF
 * Gestion des états chargement, vide, erreur et actualisation
-* Analyse statique et 52 tests automatisés
 * Modification des articles
+* Archivage des articles depuis la liste courante
+* Consultation des articles dans la page Archives
+* Restauration des articles archivés vers le statut `DRAFT`
+* Validation réelle des transitions `DRAFT` → `ARCHIVED` → `DRAFT` avec Supabase
+* Analyse statique et 61 tests automatisés
 
 À venir :
 
-* archivage des articles
 * Images et publication des articles
 * Tests des mutations via l'API Supabase Storage
 

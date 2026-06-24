@@ -46,4 +46,26 @@ final class ItemsListController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> archiveItem(String itemId) async {
+    return _executeMutation(() => _repository.archiveItem(itemId));
+  }
+
+  Future<bool> restoreItem(String itemId) async {
+    return _executeMutation(() => _repository.restoreItem(itemId));
+  }
+
+  Future<bool> _executeMutation(Future<void> Function() mutation) async {
+    _errorMessage = null;
+
+    try {
+      await mutation();
+      await load();
+      return _status == ItemsListStatus.success;
+    } on ItemFailure catch (failure) {
+      _errorMessage = failure.message;
+      notifyListeners();
+      return false;
+    }
+  }
 }

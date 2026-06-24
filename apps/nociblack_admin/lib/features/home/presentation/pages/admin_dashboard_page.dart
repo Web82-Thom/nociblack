@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-
 import '../../../auth/domain/entities/admin_profile.dart';
 import '../../../categories/domain/repositories/category_repository.dart';
 import '../../../categories/presentation/pages/categories_list_page.dart';
 import '../../../items/domain/repositories/item_repository.dart';
 import '../../../items/presentation/pages/item_form_page.dart';
+import '../../../items/presentation/pages/item_archive_page.dart';
 import '../../../items/presentation/pages/items_history_page.dart';
 import '../../../items/presentation/pages/items_list_page.dart';
 import '../widgets/dashboard_action_card.dart';
@@ -75,6 +75,12 @@ final class AdminDashboardPage extends StatelessWidget {
                   description: 'Historique des articles ajoutés',
                   onTap: () => _openItemsHistory(context),
                 ),
+                DashboardActionCard(
+                  icon: Icons.archive_outlined,
+                  title: 'Archive',
+                  description: 'Archive des articles',
+                  onTap: () => _openArchive(context),
+                ),
               ]),
             ),
           ),
@@ -123,7 +129,21 @@ final class AdminDashboardPage extends StatelessWidget {
   void _openItemsHistory(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => ItemsHistoryPage(itemRepository: itemRepository, categoryRepository: categoryRepository,),
+        builder: (_) => ItemsHistoryPage(
+          itemRepository: itemRepository,
+          categoryRepository: categoryRepository,
+        ),
+      ),
+    );
+  }
+
+  void _openArchive(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ItemArchivePage(
+          itemRepository: itemRepository,
+          categoryRepository: categoryRepository,
+        ),
       ),
     );
   }

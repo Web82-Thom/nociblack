@@ -68,11 +68,15 @@
 - [x] Valider les conflits de slug et de REF
 - [x] Valider l'analyse statique et les 52 tests Flutter
 - [x] Connecter React à Supabase
-- [x] Implémenter la modification
+- [x] Implémenter la modification des articles
+- [x] Implémenter l'archivage des articles depuis la liste courante
+- [x] Connecter la page Archives à la collection Supabase archivée
+- [x] Restaurer les articles archivés vers le statut `DRAFT`
+- [x] Valider réellement les transitions `DRAFT` → `ARCHIVED` → `DRAFT` avec Supabase
+- [x] Valider l'analyse statique et les 61 tests Flutter
 
 ## À venir
 
-- [ ] l'archivage des articles
 - [ ] Implémenter la gestion des images et la publication des articles
 - [ ] Tester les mutations Storage depuis l'application Flutter
 

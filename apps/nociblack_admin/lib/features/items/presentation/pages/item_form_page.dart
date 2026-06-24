@@ -125,6 +125,17 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isEditing ? 'Modifier l’article' : 'Nouvel article'),
+        actions: widget.isEditing
+            ? [
+                IconButton(onPressed: () {}, icon: const Icon(Icons.archive)),
+                IconButton(
+                  onPressed: () {
+                    // TODO: suppression
+                  },
+                  icon: const Icon(Icons.delete, color: Colors.red,),
+                ),
+              ]
+            : [],
       ),
       body: SafeArea(
         child: ListenableBuilder(

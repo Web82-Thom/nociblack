@@ -15,4 +15,9 @@ abstract interface class ItemRepository {
     required String itemId,
     required ItemDraft draft,
   });
+
+  Future<void> archiveItem(String itemId);
+
+  /// Restaure un article archivé en brouillon, conformément à la règle métier.
+  Future<void> restoreItem(String itemId);
 }

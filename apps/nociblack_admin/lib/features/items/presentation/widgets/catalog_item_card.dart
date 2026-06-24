@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nociblack/features/categories/domain/repositories/category_repository.dart';
-import 'package:nociblack/features/items/domain/repositories/item_repository.dart';
-
 import '../../../../core/formatters/price_formatter.dart';
 import '../../domain/entities/catalog_item.dart';
 
@@ -11,14 +8,10 @@ final class CatalogItemCard extends StatelessWidget {
     required this.item,
     this.onTap,
     super.key,
-    required this.itemRepository,
-    required this.categoryRepository,
   });
 
   final CatalogItem item;
   final VoidCallback? onTap;
-  final ItemRepository itemRepository;
-  final CategoryRepository categoryRepository;
 
   @override
   Widget build(BuildContext context) {

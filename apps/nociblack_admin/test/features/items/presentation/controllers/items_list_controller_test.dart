@@ -60,4 +60,89 @@ void main() {
       'Impossible de charger les articles pour le moment.',
     );
   });
+
+  test('archives an item and refreshes the current collection', () async {
+    final item = buildCatalogItem();
+    final repository = FakeItemRepository(currentItems: [item]);
+    final controller = ItemsListController(
+      repository: repository,
+      collection: ItemsCollection.current,
+    );
+    addTearDown(controller.dispose);
+
+    await controller.load();
+    final wasArchived = await controller.archiveItem(item.id);
+
+    expect(wasArchived, isTrue);
+    expect(repository.archiveCalls, 1);
+    expect(repository.lastArchivedItemId, item.id);
+    expect(repository.currentCalls, 2);
+    expect(controller.items, isEmpty);
+  });
+
+  test('exposes the business error when archiving fails', () async {
+    final item = buildCatalogItem();
+    final repository = FakeItemRepository(
+      currentItems: [item],
+      archiveFailure: const ItemSaveFailure(),
+    );
+    final controller = ItemsListController(
+      repository: repository,
+      collection: ItemsCollection.current,
+    );
+    addTearDown(controller.dispose);
+
+    await controller.load();
+    final wasArchived = await controller.archiveItem(item.id);
+
+    expect(wasArchived, isFalse);
+    expect(controller.items, [item]);
+    expect(
+      controller.errorMessage,
+      'Impossible d’enregistrer l’article pour le moment.',
+    );
+  });
+
+  test('restores an item and refreshes the archived collection', () async {
+    final item = buildCatalogItem(status: ItemStatus.archived);
+    final repository = FakeItemRepository(archivedItems: [item]);
+    final controller = ItemsListController(
+      repository: repository,
+      collection: ItemsCollection.archived,
+    );
+    addTearDown(controller.dispose);
+
+    await controller.load();
+    final wasRestored = await controller.restoreItem(item.id);
+
+    expect(wasRestored, isTrue);
+    expect(repository.restoreCalls, 1);
+    expect(repository.lastRestoredItemId, item.id);
+    expect(repository.archivedCalls, 2);
+    expect(controller.items, isEmpty);
+    expect(repository.currentItems.single.status, ItemStatus.draft);
+  });
+
+  test('exposes the business error when restoring fails', () async {
+    final item = buildCatalogItem(status: ItemStatus.archived);
+    final repository = FakeItemRepository(
+      archivedItems: [item],
+      restoreFailure: const ItemRestoreFailure(),
+    );
+    final controller = ItemsListController(
+      repository: repository,
+      collection: ItemsCollection.archived,
+    );
+    addTearDown(controller.dispose);
+
+    await controller.load();
+    final wasRestored = await controller.restoreItem(item.id);
+
+    expect(wasRestored, isFalse);
+    expect(controller.items, [item]);
+    expect(
+      controller.errorMessage,
+      'Impossible de restaurer l’article pour le moment.',
+    );
+  });
 }

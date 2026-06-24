@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nociblack/features/categories/domain/repositories/category_repository.dart';
 import 'package:nociblack/features/items/domain/errors/item_failure.dart';
+import 'package:nociblack/features/items/domain/entities/catalog_item.dart';
+import 'package:nociblack/features/items/presentation/pages/item_archive_page.dart';
 import 'package:nociblack/features/items/presentation/pages/items_list_page.dart';
 
 import '../../../../helpers/catalog_item_fixture.dart';
@@ -59,5 +61,111 @@ void main() {
 
     expect(repository.currentCalls, 2);
     expect(find.text('Aucun article à afficher.'), findsOneWidget);
+  });
+
+  testWidgets('confirms the archive and removes the item from the list', (
+    tester,
+  ) async {
+    final item = buildCatalogItem();
+    final repository = FakeItemRepository(currentItems: [item]);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ItemsListPage(
+          itemRepository: repository,
+          categoryRepository: FakeCategoryRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(Dismissible), const Offset(500, 0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Oui'));
+    await tester.pumpAndSettle();
+
+    expect(repository.lastArchivedItemId, item.id);
+    expect(find.text('Article test'), findsNothing);
+    expect(find.text('Article archivé.'), findsOneWidget);
+  });
+
+  testWidgets('keeps the item and displays the archive failure', (tester) async {
+    final repository = FakeItemRepository(
+      currentItems: [buildCatalogItem()],
+      archiveFailure: const ItemSaveFailure(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ItemsListPage(
+          itemRepository: repository,
+          categoryRepository: FakeCategoryRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(Dismissible), const Offset(500, 0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Oui'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Article test'), findsOneWidget);
+    expect(
+      find.text('Impossible d’enregistrer l’article pour le moment.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('restores an archived item as a draft', (tester) async {
+    final item = buildCatalogItem(status: ItemStatus.archived);
+    final repository = FakeItemRepository(archivedItems: [item]);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ItemArchivePage(
+          itemRepository: repository,
+          categoryRepository: FakeCategoryRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(Dismissible), const Offset(500, 0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Restaurer'));
+    await tester.pumpAndSettle();
+
+    expect(repository.lastRestoredItemId, item.id);
+    expect(find.text('Article test'), findsNothing);
+    expect(find.text('Article restauré en brouillon.'), findsOneWidget);
+  });
+
+  testWidgets('keeps the archived item when restoration fails', (tester) async {
+    final repository = FakeItemRepository(
+      archivedItems: [buildCatalogItem(status: ItemStatus.archived)],
+      restoreFailure: const ItemRestoreFailure(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ItemArchivePage(
+          itemRepository: repository,
+          categoryRepository: FakeCategoryRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(Dismissible), const Offset(500, 0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Restaurer'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Article test'), findsOneWidget);
+    expect(
+      find.text('Impossible de restaurer l’article pour le moment.'),
+      findsOneWidget,
+    );
   });
 }
