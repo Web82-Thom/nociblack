@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nociblack/features/auth/domain/entities/admin_profile.dart';
 import 'package:nociblack/features/home/presentation/pages/admin_dashboard_page.dart';
 
+import '../../../../helpers/fake_item_repository.dart';
+
 void main() {
   const profile = AdminProfile(
     id: 'admin-id',
@@ -15,7 +17,11 @@ void main() {
   Future<void> pumpDashboard(WidgetTester tester) {
     return tester.pumpWidget(
       MaterialApp(
-        home: AdminDashboardPage(profile: profile, onSignOut: () async {}),
+        home: AdminDashboardPage(
+          profile: profile,
+          onSignOut: () async {},
+          itemRepository: FakeItemRepository(),
+        ),
       ),
     );
   }

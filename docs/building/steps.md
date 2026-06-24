@@ -46,14 +46,18 @@
 - [x] Valider la session et le profil `ADMIN` ou `SUPER_ADMIN`
 - [x] Gérer la restauration de session et la déconnexion
 - [x] Intégrer l'autoremplissage Android du formulaire
-- [x] Valider l'analyse statique et les 18 tests Flutter
+- [x] Valider l'analyse statique et les 18 tests du socle Auth/dashboard
 - [x] Créer le tableau de bord Admin et son composant de carte réutilisable
 - [x] Ajouter la navigation vers les écrans provisoires du catalogue
+- [x] Créer le domaine et le repository de lecture des articles
+- [x] Connecter les listes Articles et Historique à Supabase
+- [x] Valider les états chargement, vide, erreur et actualisation
+- [x] Valider l'analyse statique et les 28 tests Flutter
 
 ## À venir
 
-- [ ] Connecter les repositories Flutter au catalogue
-- [ ] Connecter les écrans Articles, Nouvel article et Historique à Supabase
+- [ ] Connecter le repository des catégories dans Flutter
+- [ ] Implémenter la création et la modification des articles
 - [ ] Tester les mutations Storage depuis l'application Flutter
 - [ ] Connecter React à Supabase
 

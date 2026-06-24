@@ -4,6 +4,7 @@ import 'package:nociblack/app/app.dart';
 import 'package:nociblack/features/auth/domain/errors/auth_failure.dart';
 
 import 'helpers/fake_auth_repository.dart';
+import 'helpers/fake_item_repository.dart';
 
 void main() {
   testWidgets('displays the administrator login page without a session', (
@@ -13,7 +14,10 @@ void main() {
     addTearDown(repository.dispose);
 
     await tester.pumpWidget(
-      NociBlackAdminApp(authRepository: repository),
+      NociBlackAdminApp(
+        authRepository: repository,
+        itemRepository: FakeItemRepository(),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -34,7 +38,10 @@ void main() {
     addTearDown(repository.dispose);
 
     await tester.pumpWidget(
-      NociBlackAdminApp(authRepository: repository),
+      NociBlackAdminApp(
+        authRepository: repository,
+        itemRepository: FakeItemRepository(),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -67,7 +74,10 @@ void main() {
     addTearDown(repository.dispose);
 
     await tester.pumpWidget(
-      NociBlackAdminApp(authRepository: repository),
+      NociBlackAdminApp(
+        authRepository: repository,
+        itemRepository: FakeItemRepository(),
+      ),
     );
     await tester.pumpAndSettle();
 

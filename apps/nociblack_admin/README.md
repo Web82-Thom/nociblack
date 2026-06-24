@@ -14,8 +14,9 @@ L'application permet aux administrateurs de gérer :
 * La publication du catalogue
 
 Le schéma de données, les politiques RLS et Storage sont déployés sur Supabase.
-Le SDK Supabase et l'authentification administrative sont intégrés et validés
-sur Android. Les repositories du catalogue constituent la prochaine étape.
+Le SDK Supabase, l'authentification administrative et la lecture du catalogue
+sont intégrés et validés sur Android. La création et l'édition des articles
+constituent les prochaines étapes.
 
 ---
 
@@ -88,11 +89,12 @@ lib/
 │   │       └── widgets/
 │   │           └── dashboard_action_card.dart
 │   └── items/
+│       ├── data/
+│       ├── domain/
 │       └── presentation/
-│           └── pages/
-│               ├── item_form_page.dart
-│               ├── items_histories_page.dart
-│               └── items_list_page.dart
+│           ├── controllers/
+│           ├── pages/
+│           └── widgets/
 └── main.dart
 ```
 
@@ -247,9 +249,9 @@ flutter analyze
 flutter test
 ```
 
-Le socle actuel compte quinze tests couvrant la configuration, le domaine
-Auth, le contrôleur de session et les transitions de widgets. Le démarrage
-Android avec connexion et déconnexion Supabase a également été validé.
+Le socle actuel compte vingt-huit tests couvrant la configuration, les domaines
+Auth et Articles, les contrôleurs et les transitions de widgets. Le démarrage
+Android, l'authentification et la lecture Supabase ont également été validés.
 
 ---
 
@@ -267,12 +269,14 @@ Terminé :
 * Restauration de session et déconnexion
 * Intégration de l'autoremplissage Android
 * Tableau de bord Admin et navigation vers les écrans provisoires du catalogue
-* Analyse statique et 18 tests automatisés
+* Lecture des articles courants et archivés depuis Supabase
+* Gestion des états chargement, vide, erreur et actualisation
+* Analyse statique et 28 tests automatisés
 
 À venir :
 
-* Repositories du catalogue
-* Connexion des écrans Articles, Nouvel article et Historique aux données Supabase
+* Repository des catégories
+* Création et modification des articles
 * Tests des mutations via l'API Supabase Storage
 
 ---

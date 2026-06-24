@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../../../home/presentation/pages/admin_dashboard_page.dart';
+import '../../../items/domain/repositories/item_repository.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../controllers/auth_controller.dart';
 import 'login_page.dart';
 
 /// Sélectionne l'écran à partir de la session réellement validée.
 final class AuthGate extends StatefulWidget {
-  const AuthGate({required this.authRepository, super.key});
+  const AuthGate({
+    required this.authRepository,
+    required this.itemRepository,
+    super.key,
+  });
 
   final AuthRepository authRepository;
+  final ItemRepository itemRepository;
 
   @override
   State<AuthGate> createState() => _AuthGateState();
@@ -44,6 +50,7 @@ final class _AuthGateState extends State<AuthGate> {
           AuthenticationStatus.authenticated => AdminDashboardPage(
             profile: _controller.profile!,
             onSignOut: _controller.signOut,
+            itemRepository: widget.itemRepository,
           ),
         };
       },

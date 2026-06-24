@@ -80,9 +80,10 @@ Services retenus pour la V1 :
 État actuel : le schéma PostgreSQL, les politiques RLS et Storage sont appliqués sur
 le projet hébergé. Les accès public, `ADMIN`, `SUPER_ADMIN` et administrateur
 désactivé sont validés par des tests SQL transactionnels. L'application Flutter
-Admin initialise Supabase, authentifie les administrateurs actifs et restaure
-leur session. Les repositories Flutter et la connexion de l'application React
-restent à implémenter.
+Admin initialise Supabase, authentifie les administrateurs actifs, restaure leur
+session et consulte les articles courants ou archivés. La création et l'édition
+du catalogue Flutter ainsi que la connexion de l'application React restent à
+implémenter.
 
 ---
 

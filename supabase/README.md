@@ -412,12 +412,13 @@ Initialisation du SDK Supabase dans l'application Flutter Admin
 Validation du démarrage Android et des tests Flutter
 Authentification des profils ADMIN et SUPER_ADMIN actifs
 Validation de la restauration de session et de la déconnexion
+Lecture des articles courants et archivés depuis l'application Flutter Admin
 ```
 
 À venir :
 
 ```text
-Repositories catalogue de l'application Flutter Admin
+Création et modification du catalogue depuis l'application Flutter Admin
 Connexion de l'application React à Supabase
 ```
 
