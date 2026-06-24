@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/catalog_item.dart';
+import '../../domain/entities/item_deletion_result.dart';
 import '../../domain/entities/item_draft.dart';
 import '../../domain/errors/item_failure.dart';
 import '../../domain/repositories/item_repository.dart';
@@ -158,4 +159,91 @@ final class SupabaseItemRepository implements ItemRepository {
       throw const ItemRestoreFailure();
     }
   }
+
+  @override
+  Future<ItemDeletionResult> deleteItem(String itemId) async {
+    late final List<_StorageDeletionJob> jobs;
+
+    try {
+      final rows = await _client.rpc(
+        'delete_item_permanently',
+        params: {'target_item_id': itemId},
+      );
+      jobs = _mapDeletionJobs(rows);
+    } catch (_) {
+      throw const ItemDeleteFailure();
+    }
+
+    final cleanupCompleted = await _cleanupStorageJobs(jobs);
+
+    return ItemDeletionResult(
+      pendingStorageObjectCount: cleanupCompleted ? 0 : jobs.length,
+    );
+  }
+
+  @override
+  Future<void> retryPendingStorageCleanup() async {
+    try {
+      final rows = await _client.rpc(
+        'get_pending_item_storage_deletions',
+        params: {'requested_limit': 100},
+      );
+      await _cleanupStorageJobs(_mapDeletionJobs(rows));
+    } catch (_) {
+      // Le catalogue reste utilisable : les jobs durables seront repris lors
+      // de la prochaine ouverture d'une collection d'articles.
+    }
+  }
+
+  List<_StorageDeletionJob> _mapDeletionJobs(dynamic rows) {
+    return (rows as List<dynamic>)
+        .cast<Map<String, dynamic>>()
+        .map(_StorageDeletionJob.fromJson)
+        .toList(growable: false);
+  }
+
+  Future<bool> _cleanupStorageJobs(List<_StorageDeletionJob> jobs) async {
+    if (jobs.isEmpty) return true;
+
+    try {
+      final jobsByBucket = <String, List<_StorageDeletionJob>>{};
+      for (final job in jobs) {
+        jobsByBucket.putIfAbsent(job.bucketId, () => []).add(job);
+      }
+
+      for (final entry in jobsByBucket.entries) {
+        await _client.storage
+            .from(entry.key)
+            .remove(entry.value.map((job) => job.objectName).toList());
+      }
+
+      await _client.rpc(
+        'complete_item_storage_deletions',
+        params: {'completed_job_ids': jobs.map((job) => job.id).toList()},
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+}
+
+final class _StorageDeletionJob {
+  const _StorageDeletionJob({
+    required this.id,
+    required this.bucketId,
+    required this.objectName,
+  });
+
+  factory _StorageDeletionJob.fromJson(Map<String, dynamic> json) {
+    return _StorageDeletionJob(
+      id: json['job_id'] as String,
+      bucketId: json['bucket_id'] as String,
+      objectName: json['object_name'] as String,
+    );
+  }
+
+  final String id;
+  final String bucketId;
+  final String objectName;
 }

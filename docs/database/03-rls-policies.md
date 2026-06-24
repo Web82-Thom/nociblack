@@ -3,8 +3,9 @@
 ## 1. Objet
 
 Ce document décrit les règles d'autorisation RLS implémentées pour NociBlacK V1.
-La migration exécutable correspondante est
-`supabase/migrations/20260623124112_create_rls_policies.sql`.
+Les migrations exécutables correspondantes sont
+`supabase/migrations/20260623124112_create_rls_policies.sql` et
+`supabase/migrations/20260624152630_enable_permanent_item_deletion.sql`.
 
 ## 2. Principes
 
@@ -96,8 +97,15 @@ lisible publiquement et est présenté comme indisponible par les interfaces cli
 
 ### Suppression
 
-La suppression physique est interdite. L'opération métier correspond au statut
-`ARCHIVED`.
+Le `DELETE` direct reste interdit au public et aux sessions authentifiées : aucune
+politique RLS de suppression n'est exposée sur la table. Un `ADMIN` ou
+`SUPER_ADMIN` actif peut appeler `delete_item_permanently(uuid)`. Cette fonction
+`security definer` vérifie le rôle côté base, verrouille l'article, enregistre les
+objets Storage à nettoyer, puis supprime l'agrégat dans une seule transaction.
+
+`get_pending_item_storage_deletions(integer)` et
+`complete_item_storage_deletions(uuid[])` permettent à Flutter de reprendre et
+d'acquitter le nettoyage Storage sans exposer la file privée.
 
 ## 7. Politiques de `item_images`
 
@@ -137,7 +145,8 @@ Les politiques et fonctions garantissent qu'un `ADMIN` ne peut pas :
 
 ## 9. Scénarios validés
 
-Les scénarios suivants ont été validés sur le projet Supabase hébergé :
+Les scénarios 1 à 10 ont été validés sur le projet Supabase hébergé. Les scénarios
+11 à 13 sont validés localement et restent à confirmer sur le projet hébergé :
 
 1. Un visiteur lit une catégorie active.
 2. Un visiteur ne lit pas une catégorie inactive.
@@ -149,8 +158,15 @@ Les scénarios suivants ont été validés sur le projet Supabase hébergé :
 8. Un `ADMIN` ne peut modifier aucun rôle ni compte tiers.
 9. Un `SUPER_ADMIN` gère les profils administratifs.
 10. Un administrateur désactivé perd immédiatement tous ses droits privés.
+11. Un `ADMIN` et un `SUPER_ADMIN` actifs peuvent supprimer définitivement un
+    article via la fonction dédiée.
+12. Le public, un compte désactivé et un `DELETE` direct ne peuvent pas contourner
+    cette fonction.
+13. Les références d'images sont supprimées en cascade et leurs chemins sont
+    conservés dans la file durable jusqu'à confirmation du nettoyage Storage.
 
 Ces scénarios sont couverts par :
 
 - `supabase/tests/database/public_rls_test.sql` ;
-- `supabase/tests/database/admin_rls_test.sql`.
+- `supabase/tests/database/admin_rls_test.sql` ;
+- `supabase/tests/database/item_deletion_test.sql`.

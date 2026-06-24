@@ -6,6 +6,7 @@ import '../../domain/entities/catalog_item.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../controllers/items_list_controller.dart';
 import '../widgets/catalog_item_card.dart';
+import '../widgets/permanent_item_deletion_dialog.dart';
 
 /// Vue réutilisable pour les articles courants et les archives.
 final class ItemsCollectionPage extends StatefulWidget {
@@ -119,34 +120,27 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
       ..showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Future<void> _confirmDelete(String itemId) async {
-    final bool? confirmed = await showDialog<bool>(
+  Future<void> _confirmDelete(CatalogItem item) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Suppression'),
-          content: const Text(
-            'La suppression définitive des articles est désactivée pour le moment.\n\n'
-            'Utilisez plutôt l’archivage.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Annuler'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Supprimer'),
-            ),
-          ],
-        );
-      },
+      builder: (_) => PermanentItemDeletionDialog(itemTitle: item.title),
     );
 
-    if (confirmed == true) {
-      // TODO: deleteItem()
-      debugPrint('Article à supprimer : $itemId');
-    }
+    if (confirmed != true || !mounted) return;
+
+    final result = await _controller.deleteItem(item.id);
+    if (!mounted) return;
+
+    final message = switch (result) {
+      null => _controller.errorMessage ?? 'Impossible de supprimer l’article.',
+      final result when result.hasPendingStorageCleanup =>
+        'Article supprimé. Le nettoyage des images sera repris automatiquement.',
+      _ => 'Article supprimé définitivement.',
+    };
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _openItemForm(CatalogItem item) async {
@@ -177,9 +171,7 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
 
     return Dismissible(
       key: ValueKey(item.id),
-      direction: isArchivedCollection
-          ? DismissDirection.startToEnd
-          : DismissDirection.horizontal,
+      direction: DismissDirection.horizontal,
       background: Container(
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 24),
@@ -189,16 +181,15 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
           color: Colors.white,
         ),
       ),
-      secondaryBackground: isArchivedCollection
-          ? null
-          : Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 24),
-              color: Colors.red,
-              child: const Icon(Icons.delete, color: Colors.white),
-            ),
+      secondaryBackground: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 24),
+        color: Colors.red,
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
       confirmDismiss: (direction) async {
-        if (isArchivedCollection) {
+        if (isArchivedCollection &&
+            direction == DismissDirection.startToEnd) {
           await _confirmRestore(item.id);
           return false;
         }
@@ -209,7 +200,7 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
         }
 
         if (direction == DismissDirection.endToStart) {
-          await _confirmDelete(item.id);
+          await _confirmDelete(item);
           return false;
         }
 

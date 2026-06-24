@@ -1,4 +1,5 @@
 import 'package:nociblack/features/items/domain/entities/catalog_item.dart';
+import 'package:nociblack/features/items/domain/entities/item_deletion_result.dart';
 import 'package:nociblack/features/items/domain/entities/item_draft.dart';
 import 'package:nociblack/features/items/domain/errors/item_failure.dart';
 import 'package:nociblack/features/items/domain/repositories/item_repository.dart';
@@ -12,6 +13,10 @@ final class FakeItemRepository implements ItemRepository {
     this.saveFailure,
     this.archiveFailure,
     this.restoreFailure,
+    this.deleteFailure,
+    this.deletionResult = const ItemDeletionResult(
+      pendingStorageObjectCount: 0,
+    ),
   });
 
   List<CatalogItem> currentItems;
@@ -21,6 +26,8 @@ final class FakeItemRepository implements ItemRepository {
   ItemFailure? saveFailure;
   ItemFailure? archiveFailure;
   ItemFailure? restoreFailure;
+  ItemFailure? deleteFailure;
+  ItemDeletionResult deletionResult;
   ItemDraft? lastCreatedDraft;
   int currentCalls = 0;
   int archivedCalls = 0;
@@ -30,6 +37,9 @@ final class FakeItemRepository implements ItemRepository {
   int archiveCalls = 0;
   String? lastRestoredItemId;
   int restoreCalls = 0;
+  String? lastDeletedItemId;
+  int deleteCalls = 0;
+  int retryCleanupCalls = 0;
 
   @override
   Future<List<CatalogItem>> getCurrentItems() async {
@@ -144,5 +154,27 @@ final class FakeItemRepository implements ItemRepository {
         primaryImagePath: archivedItem.primaryImagePath,
       ),
     ];
+  }
+
+  @override
+  Future<ItemDeletionResult> deleteItem(String itemId) async {
+    deleteCalls++;
+    if (deleteFailure case final failure?) throw failure;
+
+    lastDeletedItemId = itemId;
+    currentItems = [
+      for (final item in currentItems)
+        if (item.id != itemId) item,
+    ];
+    archivedItems = [
+      for (final item in archivedItems)
+        if (item.id != itemId) item,
+    ];
+    return deletionResult;
+  }
+
+  @override
+  Future<void> retryPendingStorageCleanup() async {
+    retryCleanupCalls++;
   }
 }

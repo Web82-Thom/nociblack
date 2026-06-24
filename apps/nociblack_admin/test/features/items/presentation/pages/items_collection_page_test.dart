@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nociblack/features/categories/domain/repositories/category_repository.dart';
 import 'package:nociblack/features/items/domain/errors/item_failure.dart';
 import 'package:nociblack/features/items/domain/entities/catalog_item.dart';
+import 'package:nociblack/features/items/domain/entities/item_deletion_result.dart';
 import 'package:nociblack/features/items/presentation/pages/item_archive_page.dart';
 import 'package:nociblack/features/items/presentation/pages/items_list_page.dart';
 
@@ -165,6 +166,84 @@ void main() {
     expect(find.text('Article test'), findsOneWidget);
     expect(
       find.text('Impossible de restaurer l’article pour le moment.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('permanently deletes an item from the current collection', (
+    tester,
+  ) async {
+    final item = buildCatalogItem();
+    final repository = FakeItemRepository(currentItems: [item]);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ItemsListPage(
+          itemRepository: repository,
+          categoryRepository: FakeCategoryRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
+    await tester.pumpAndSettle();
+
+    final deleteButton = find.byKey(
+      const Key('permanent_delete_button'),
+    );
+    expect(tester.widget<FilledButton>(deleteButton).onPressed, isNull);
+
+    await tester.enterText(
+      find.byKey(const Key('permanent_delete_confirmation_field')),
+      'SUPPRIMER',
+    );
+    await tester.pump();
+    await tester.tap(deleteButton);
+    await tester.pumpAndSettle();
+
+    expect(repository.lastDeletedItemId, item.id);
+    expect(find.text('Article test'), findsNothing);
+    expect(find.text('Article supprimé définitivement.'), findsOneWidget);
+  });
+
+  testWidgets('permanently deletes an item from the archive collection', (
+    tester,
+  ) async {
+    final item = buildCatalogItem(status: ItemStatus.archived);
+    final repository = FakeItemRepository(
+      archivedItems: [item],
+      deletionResult: const ItemDeletionResult(
+        pendingStorageObjectCount: 1,
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ItemArchivePage(
+          itemRepository: repository,
+          categoryRepository: FakeCategoryRepository(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('permanent_delete_confirmation_field')),
+      'supprimer',
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('permanent_delete_button')));
+    await tester.pumpAndSettle();
+
+    expect(repository.lastDeletedItemId, item.id);
+    expect(find.text('Article test'), findsNothing);
+    expect(
+      find.text(
+        'Article supprimé. Le nettoyage des images sera repris automatiquement.',
+      ),
       findsOneWidget,
     );
   });

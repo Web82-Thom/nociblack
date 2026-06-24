@@ -458,20 +458,6 @@ begin
   rejection_detected := false;
 
   begin
-    delete from public.items
-     where id = nominal_item_id;
-  exception
-    when check_violation then
-      rejection_detected := true;
-  end;
-
-  if not rejection_detected then
-    raise exception 'TEST FAILED: physical item deletion';
-  end if;
-
-  rejection_detected := false;
-
-  begin
     delete from public.categories
      where id = active_category_id;
   exception

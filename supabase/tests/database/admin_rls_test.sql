@@ -281,19 +281,24 @@ begin
     raise exception 'TEST FAILED: ADMIN can update own profile';
   end if;
 
-  -- Aucune suppression physique des articles n’est accordée.
-  rejection_detected := false;
+  -- La suppression directe reste interdite. La suppression définitive passe
+  -- exclusivement par la RPC métier qui enregistre le nettoyage Storage.
+  affected_rows := 0;
 
   begin
     delete from public.items
     where id = admin_item_id;
+
+    get diagnostics affected_rows = row_count;
   exception
     when insufficient_privilege then
-      rejection_detected := true;
+      affected_rows := 0;
   end;
 
-  if not rejection_detected then
-    raise exception 'TEST FAILED: ADMIN received item DELETE privilege';
+  if affected_rows <> 0 or not exists (
+    select 1 from public.items where id = admin_item_id
+  ) then
+    raise exception 'TEST FAILED: ADMIN bypassed permanent deletion RPC';
   end if;
 
   perform set_config(

@@ -16,8 +16,10 @@ L'application permet aux administrateurs de gérer :
 Le schéma de données, les politiques RLS et Storage sont déployés sur Supabase.
 Le SDK Supabase, l'authentification administrative, la lecture des articles et
 la gestion complète des catégories sont intégrés et validés sur Android. La
-création, la modification, l'archivage et la restauration en brouillon des
-articles sont également opérationnels. Les images et la publication des
+création, la modification, l'archivage, la restauration en brouillon et la
+suppression définitive sécurisée des articles sont implémentées et validées
+localement. Leur validation sur le projet Supabase hébergé reste à effectuer.
+Les images et la publication des
 articles constituent les prochaines étapes.
 
 ---
@@ -37,6 +39,7 @@ articles constituent les prochaines étapes.
 * Modification d'articles
 * Archivage d'articles
 * Restauration des articles archivés en brouillon
+* Suppression définitive des articles et de leurs images
 * Gestion du stock
 * Gestion du prix
 * Gestion du SKU
@@ -256,7 +259,7 @@ flutter analyze
 flutter test
 ```
 
-Le socle actuel compte cinquante-deux tests couvrant la configuration, les
+Le socle actuel compte 66 tests couvrant la configuration, les
 domaines Auth, Articles et Catégories, les contrôleurs et les transitions de
 widgets. Le démarrage Android et les lectures Supabase ont également été validés.
 
@@ -290,11 +293,14 @@ Terminé :
 * Consultation des articles dans la page Archives
 * Restauration des articles archivés vers le statut `DRAFT`
 * Validation réelle des transitions `DRAFT` → `ARCHIVED` → `DRAFT` avec Supabase
-* Analyse statique et 61 tests automatisés
+* Suppression définitive depuis les listes Articles et Archives
+* File durable et reprise automatique du nettoyage des images Storage
+* Analyse statique et 66 tests automatisés
 
 À venir :
 
 * Images et publication des articles
+* Validation réelle de la suppression avec images sur le projet Supabase hébergé
 * Tests des mutations via l'API Supabase Storage
 
 ---

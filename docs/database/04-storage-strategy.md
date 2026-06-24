@@ -109,10 +109,10 @@ elle ne contient jamais d'URL signée temporaire.
 
 ## 5. Remplacement et suppression des images
 
-L'interdiction de suppression physique validée concerne les profils, catégories et
-articles. Les fichiers médias doivent pouvoir être supprimés lors d'un remplacement
-ou du retrait explicite d'une image, car `item_images` ne possède pas de mécanisme
-d'archivage et chaque article est limité à trois images.
+Les fichiers médias doivent pouvoir être supprimés lors d'un remplacement, du
+retrait explicite d'une image ou de la suppression définitive de leur article.
+`item_images` ne possède pas de mécanisme d'archivage et chaque article est limité
+à trois images.
 
 Le retrait d'une image devra :
 
@@ -123,6 +123,16 @@ Le retrait d'une image devra :
 
 L'ordre précis des opérations et la stratégie de compensation seront définis dans le
 service média avant son implémentation.
+
+La suppression définitive d'un article utilise dès maintenant une file durable :
+
+1. la fonction PostgreSQL enregistre tous les chemins dans
+   `private.item_storage_deletion_jobs` ;
+2. l'article et ses références `item_images` sont supprimés dans la même transaction ;
+3. Flutter supprime les objets via l'API Supabase Storage ;
+4. les jobs sont acquittés uniquement après réussite de l'API ;
+5. un échec réseau laisse les jobs en attente et le nettoyage reprend à la prochaine
+   ouverture d'une collection d'articles.
 
 ## 6. Sécurité des fichiers
 

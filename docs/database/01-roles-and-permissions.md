@@ -34,6 +34,7 @@ Il peut :
 - créer et modifier les articles ;
 - changer le statut des articles ;
 - gérer les images des articles ;
+- supprimer définitivement un article et ses images ;
 - consulter les brouillons et les éléments archivés dans l'application Admin.
 
 Il ne peut jamais :
@@ -72,6 +73,7 @@ En V1, le compte propriétaire est le seul compte `SUPER_ADMIN` prévu.
 | Lire les brouillons et archives | Non | Oui | Oui |
 | Créer ou modifier un article | Non | Oui | Oui |
 | Publier ou archiver un article | Non | Oui | Oui |
+| Supprimer définitivement un article et ses images | Non | Oui | Oui |
 | Gérer les images d'article | Non | Oui | Oui |
 | Lire son propre profil | Non | Oui | Oui |
 | Lire tous les profils | Non | Non | Oui |
@@ -81,8 +83,10 @@ En V1, le compte propriétaire est le seul compte `SUPER_ADMIN` prévu.
 | Lire les ressources publiques de marque | Oui | Oui | Oui |
 | Modifier les ressources de marque | Non | Non | Oui |
 
-Dans cette matrice, « supprimer » une catégorie ou un article signifie l'archiver.
-Aucune suppression physique de ces enregistrements n'est autorisée en V1.
+Une catégorie reste supprimée logiquement par archivage. Un article peut être
+supprimé définitivement par un `ADMIN` ou `SUPER_ADMIN` actif, exclusivement via
+l'opération sécurisée qui enregistre aussi toutes ses images pour leur suppression
+dans Storage. Les profils et catégories ne sont jamais supprimés physiquement en V1.
 
 ## 4. État d'un compte administratif
 

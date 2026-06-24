@@ -1,4 +1,5 @@
 import '../entities/catalog_item.dart';
+import '../entities/item_deletion_result.dart';
 import '../entities/item_draft.dart';
 
 /// Contrat de lecture du catalogue administratif.
@@ -20,4 +21,12 @@ abstract interface class ItemRepository {
 
   /// Restaure un article archivé en brouillon, conformément à la règle métier.
   Future<void> restoreItem(String itemId);
+
+  /// Supprime définitivement l'article et tente immédiatement le nettoyage
+  /// de tous ses objets Storage.
+  Future<ItemDeletionResult> deleteItem(String itemId);
+
+  /// Reprend silencieusement les nettoyages Storage laissés en attente par une
+  /// interruption réseau ou la fermeture précédente de l'application.
+  Future<void> retryPendingStorageCleanup();
 }

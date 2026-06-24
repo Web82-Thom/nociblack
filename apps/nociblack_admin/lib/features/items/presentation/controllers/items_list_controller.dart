@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/catalog_item.dart';
+import '../../domain/entities/item_deletion_result.dart';
 import '../../domain/errors/item_failure.dart';
 import '../../domain/repositories/item_repository.dart';
 
@@ -33,6 +34,7 @@ final class ItemsListController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      await _repository.retryPendingStorageCleanup();
       _items = switch (_collection) {
         ItemsCollection.current => await _repository.getCurrentItems(),
         ItemsCollection.archived => await _repository.getArchivedItems(),
@@ -53,6 +55,20 @@ final class ItemsListController extends ChangeNotifier {
 
   Future<bool> restoreItem(String itemId) async {
     return _executeMutation(() => _repository.restoreItem(itemId));
+  }
+
+  Future<ItemDeletionResult?> deleteItem(String itemId) async {
+    _errorMessage = null;
+
+    try {
+      final result = await _repository.deleteItem(itemId);
+      await load();
+      return result;
+    } on ItemFailure catch (failure) {
+      _errorMessage = failure.message;
+      notifyListeners();
+      return null;
+    }
   }
 
   Future<bool> _executeMutation(Future<void> Function() mutation) async {

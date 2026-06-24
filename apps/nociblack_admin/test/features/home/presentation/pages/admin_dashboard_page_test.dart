@@ -63,7 +63,7 @@ void main() {
     expect(find.widgetWithText(AppBar, 'Archives'), findsOneWidget);
     expect(find.text('Article test'), findsOneWidget);
     final dismissible = tester.widget<Dismissible>(find.byType(Dismissible));
-    expect(dismissible.direction, DismissDirection.startToEnd);
+    expect(dismissible.direction, DismissDirection.horizontal);
     expect(repository.archivedCalls, 1);
   });
 

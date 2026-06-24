@@ -74,9 +74,15 @@
 - [x] Restaurer les articles archivés vers le statut `DRAFT`
 - [x] Valider réellement les transitions `DRAFT` → `ARCHIVED` → `DRAFT` avec Supabase
 - [x] Valider l'analyse statique et les 61 tests Flutter
+- [x] Implémenter la suppression définitive sécurisée des articles
+- [x] Supprimer les références d'images et reprendre durablement le nettoyage Storage
+- [x] Ajouter la suppression depuis les listes Articles et Archives
+- [x] Valider localement les règles SQL et les 66 tests Flutter
 
 ## À venir
 
+- [ ] Appliquer la migration de suppression au projet Supabase hébergé
+- [ ] Valider réellement la suppression d'un article avec ses images Storage
 - [ ] Implémenter la gestion des images et la publication des articles
 - [ ] Tester les mutations Storage depuis l'application Flutter
 
@@ -98,7 +104,8 @@ supabase/tests/database/
 ├── initial_schema_test.sql
 ├── public_rls_test.sql
 ├── admin_rls_test.sql
-└── storage_rls_test.sql
+├── storage_rls_test.sql
+└── item_deletion_test.sql
 ```
 
 ## Commandes Flutter Admin

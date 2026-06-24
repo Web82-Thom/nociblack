@@ -91,7 +91,8 @@ le projet hébergé. Les accès public, `ADMIN`, `SUPER_ADMIN` et administrateur
 désactivé sont validés par des tests SQL transactionnels. L'application Flutter
 Admin initialise Supabase, authentifie les administrateurs actifs, restaure leur
 session et gère les catégories. Les articles peuvent être créés, modifiés,
-archivés, consultés dans les archives puis restaurés en brouillon. React est
+archivés, consultés dans les archives, restaurés en brouillon ou supprimés
+définitivement avec leurs images par un administrateur actif. React est
 connecté à Supabase. Les images, la publication et le catalogue public restent à
 implémenter.
 

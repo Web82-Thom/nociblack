@@ -29,3 +29,8 @@ final class ItemRestoreFailure extends ItemFailure {
   const ItemRestoreFailure()
     : super('Impossible de restaurer l’article pour le moment.');
 }
+
+final class ItemDeleteFailure extends ItemFailure {
+  const ItemDeleteFailure()
+    : super('Impossible de supprimer définitivement l’article pour le moment.');
+}

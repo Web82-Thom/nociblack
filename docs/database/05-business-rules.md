@@ -9,7 +9,8 @@ le schéma de données, la matrice des permissions et les stratégies RLS et Sto
 
 - Le catalogue repose uniquement sur des catégories dynamiques.
 - Aucun univers commercial n'est codé en dur.
-- Aucun profil, catégorie ou article n'est supprimé physiquement en V1.
+- Aucun profil ni catégorie n'est supprimé physiquement en V1. Un article peut
+  être supprimé définitivement par un administrateur actif via l'opération dédiée.
 - Les contrôles critiques sont garantis par Supabase, pas uniquement par Flutter.
 - Les données monétaires sont stockées en centimes.
 - Toutes les dates techniques utilisent une date/heure avec fuseau.
@@ -69,6 +70,16 @@ invalides, si la catégorie est inactive ou si aucune image n'est associée à l
 - Il reste consultable dans l'application Admin.
 - La restauration d'une archive repasse obligatoirement par `DRAFT` avant publication.
 
+### Suppression définitive
+
+- Un `ADMIN` ou `SUPER_ADMIN` actif peut supprimer un article courant ou archivé.
+- L'action est irréversible et exige une confirmation renforcée dans Flutter.
+- La suppression retire l'article et toutes ses références `item_images`.
+- Chaque objet Storage associé est enregistré dans une file durable avant la
+  suppression en base, puis supprimé via l'API Storage.
+- Un échec du nettoyage Storage ne restaure pas l'article : le job reste en attente
+  et sera repris automatiquement.
+
 ## 6. Images d'article
 
 - Un article possède entre zéro et trois images lorsqu'il est en brouillon.
@@ -115,7 +126,8 @@ ne doit pas dépendre uniquement de l'application Flutter.
 - `updated_at` est actualisé lors de chaque modification métier.
 - Les dates sont produites par la base de données afin de ne pas dépendre de l'heure
   du téléphone Android.
-- La suppression logique préserve l'historique fonctionnel minimal de la V1.
+- L'archivage préserve l'historique fonctionnel minimal ; la suppression définitive
+  d'un article le retire volontairement avec ses images.
 
 ## 11. Décisions validées avant les migrations
 
@@ -132,6 +144,8 @@ Les décisions suivantes sont définitives pour la V1 :
 6. les comptes administratifs sont créés manuellement depuis le tableau de bord
    Supabase en V1, sans clé privilégiée dans l'application Flutter ;
 7. le retrait d'une image supprime physiquement le fichier Storage correspondant.
+8. la suppression définitive d'un article est réservée aux administrateurs actifs et
+   utilise une file durable pour garantir la reprise du nettoyage Storage.
 
 Ces décisions servent de référence à la conception et au contrôle des migrations
 SQL.

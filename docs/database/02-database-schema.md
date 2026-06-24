@@ -128,7 +128,8 @@ Contraintes fonctionnelles :
 - le prix est enregistré dans la plus petite unité monétaire, sans nombre décimal ;
 - la quantité en stock ne peut jamais être négative ;
 - un article est archivé avec le statut `ARCHIVED` ;
-- aucune suppression physique n'est autorisée en V1.
+- une suppression physique est réservée à la fonction sécurisée dédiée aux
+  administrateurs actifs ; un `DELETE` direct reste interdit par les permissions.
 
 ## 7. Table `item_images`
 
@@ -149,6 +150,8 @@ Contraintes fonctionnelles :
 - une seule image peut être principale pour un même article ;
 - une position ne peut être utilisée qu'une fois pour un même article ;
 - une image appartient à un seul article.
+- les références `item_images` sont supprimées en cascade avec leur article,
+  après enregistrement préalable des objets Storage dans la file durable privée.
 
 La migration du schéma fait respecter ces règles en base de données. Elles ne
 dépendent pas uniquement de contrôles Flutter.
@@ -185,5 +188,7 @@ redondants.
 - Archiver une catégorie ne modifie pas automatiquement le statut de ses articles.
 - Les articles de cette catégorie deviennent toutefois invisibles publiquement.
 - Les images suivent la visibilité publique de leur article.
+- La suppression définitive d'un article supprime son agrégat en base et planifie
+  le nettoyage de tous ses fichiers dans Supabase Storage.
 - Les règles de suppression physique des fichiers Storage sont définies dans la
   stratégie Storage.
