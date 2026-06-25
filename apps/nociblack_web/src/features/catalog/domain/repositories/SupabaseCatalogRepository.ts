@@ -1,7 +1,7 @@
-import { supabase } from '../../../../core/supabase/supabaseClient';
+import { supabase } from "../../../../core/supabase/supabaseClient";
 
-import type { CatalogItem } from '../../domain/entities/CatalogItem';
-import type { CatalogRepository } from '../../domain/repositories/CatalogRepository';
+import type { CatalogItem } from "../../domain/entities/CatalogItem";
+import type { CatalogRepository } from "../../domain/repositories/CatalogRepository";
 
 type CatalogItemRow = {
   id: string;
@@ -12,10 +12,10 @@ type CatalogItemRow = {
   stock_quantity: number;
   created_at: string;
   updated_at: string;
-
+  category_id: string;
   categories: {
     name: string;
-  }[];
+  } | null;
 
   item_images: {
     image_url: string;
@@ -26,10 +26,10 @@ type CatalogItemRow = {
 function getPublicImageUrl(imagePath: string | null): string | null {
   if (!imagePath) return null;
 
-  const normalizedPath = imagePath.replace(/^item-images\//, '');
+  const normalizedPath = imagePath.replace(/^item-images\//, "");
 
   const { data } = supabase.storage
-    .from('item-images')
+    .from("item-images")
     .getPublicUrl(normalizedPath);
 
   return data.publicUrl;
@@ -38,13 +38,15 @@ function getPublicImageUrl(imagePath: string | null): string | null {
 export class SupabaseCatalogRepository implements CatalogRepository {
   async getPublishedItems(): Promise<CatalogItem[]> {
     const { data, error } = await supabase
-      .from('items')
-      .select(`
+      .from("items")
+      .select(
+        `
         id,
         title,
         slug,
         description,
         price_cents,
+        category_id,
         stock_quantity,
         created_at,
         updated_at,
@@ -55,21 +57,21 @@ export class SupabaseCatalogRepository implements CatalogRepository {
           image_url,
           is_primary
         )
-      `)
-      .eq('status', 'PUBLISHED')
-      .order('display_order', { ascending: true })
-      .order('title', { ascending: true });
+      `,
+      )
+      .eq("status", "PUBLISHED")
+      .order("display_order", { ascending: true })
+      .order("title", { ascending: true });
 
     if (error) {
       throw error;
     }
 
-    const rows = (data ?? []) as CatalogItemRow[];
+    const rows = (data ?? []) as unknown as CatalogItemRow[];
 
     return rows.map((row) => {
       const primaryImage =
-        row.item_images.find((image) => image.is_primary) ??
-        row.item_images[0];
+        row.item_images.find((image) => image.is_primary) ?? row.item_images[0];
 
       return {
         id: row.id,
@@ -78,8 +80,8 @@ export class SupabaseCatalogRepository implements CatalogRepository {
         description: row.description,
         priceCents: row.price_cents,
 
-        categoryId: '',
-        categoryName: row.categories[0]?.name ?? '',
+        categoryId: row.category_id,
+        categoryName: row.categories?.name ?? "",
 
         stockQuantity: row.stock_quantity,
 

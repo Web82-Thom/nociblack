@@ -9,11 +9,7 @@
   position: sticky;
   top: 2rem;
   padding: 2rem;
-  background: linear-gradient(
-    180deg,
-    #1c1c1c 0%,
-    #161616 100%
-  );
+  background: linear-gradient(180deg, #1c1c1c 0%, #161616 100%);
   border: 1px solid rgba(212, 175, 55, 0.25);
   border-radius: 18px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
@@ -104,8 +100,8 @@
   cursor: pointer;
 
   transition:
-    color .2s ease,
-    transform .2s ease;
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .categoryList li:hover {
@@ -118,6 +114,17 @@
   color: var(--color-gold) !important;
 
   font-weight: 700;
+}
+
+.emptyMessage {
+  padding: 2rem;
+  color: #d4af37;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  background: #151515;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 18px;
 }
 
 /*________________ */
@@ -141,5 +148,4 @@
   .filters {
     padding: 1.5rem;
   }
-
 }
