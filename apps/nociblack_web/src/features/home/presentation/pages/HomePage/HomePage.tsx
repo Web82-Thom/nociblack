@@ -1,4 +1,5 @@
-import styles from './HomePage.module.css'
+import { CatalogPage } from '../../../../catalog/presentation/pages/CatalogPage';
+import styles from './HomePage.module.css';
 
 export function HomePage() {
   return (
@@ -8,8 +9,12 @@ export function HomePage() {
           NociBlacK
         </h1>
 
-        <p className={styles.subtitle}>Site public en préparation.</p>
+        <p className={styles.subtitle}>
+          Site public en préparation.
+        </p>
       </section>
+
+      <CatalogPage />
     </main>
-  )
+  );
 }
