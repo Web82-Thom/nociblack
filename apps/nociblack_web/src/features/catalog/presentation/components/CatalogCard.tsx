@@ -1,5 +1,7 @@
 import type { CatalogItem } from '../../domain/entities/CatalogItem';
 
+import styles from './CatalogCard.module.css';
+
 type CatalogCardProps = {
   item: CatalogItem;
 };
@@ -8,24 +10,45 @@ export function CatalogCard({
   item,
 }: CatalogCardProps) {
   return (
-    <article>
-      {item.primaryImageUrl && (
-        <img
-          src={item.primaryImageUrl}
-          alt={item.title}
-        />
-      )}
+    <article className={styles.card}>
+      <div className={styles.imageContainer}>
+        {item.primaryImageUrl ? (
+          <img
+            className={styles.image}
+            src={item.primaryImageUrl}
+            alt={item.title}
+          />
+        ) : (
+          <div className={styles.imagePlaceholder}>
+            Aucune image
+          </div>
+        )}
+      </div>
 
-      <h2>{item.title}</h2>
+      <div className={styles.content}>
+        <h2 className={styles.title}>
+          {item.title}
+        </h2>
 
-      <p>{item.categoryName}</p>
+        <p className={styles.category}>
+          {item.categoryName}
+        </p>
 
-      {/*
-        Prix volontairement masqué en V1.
-        Conserver ce bloc pour l'activer facilement plus tard.
+        {/*
+          Prix volontairement masqué en V1.
 
-        <p>{(item.priceCents / 100).toFixed(2)} €</p>
-      */}
+          <p className={styles.price}>
+            {(item.priceCents / 100).toFixed(2)} €
+          </p>
+        */}
+
+        <button
+          className={styles.button}
+          type="button"
+        >
+          Voir le produit
+        </button>
+      </div>
     </article>
   );
 }

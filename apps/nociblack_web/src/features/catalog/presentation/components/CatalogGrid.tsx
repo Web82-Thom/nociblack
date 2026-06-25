@@ -1,6 +1,8 @@
 import type { CatalogItem } from '../../domain/entities/CatalogItem';
 import { CatalogCard } from './CatalogCard';
 
+import styles from './CatalogGrid.module.css';
+
 type CatalogGridProps = {
   items: CatalogItem[];
 };
@@ -13,7 +15,7 @@ export function CatalogGrid({
   }
 
   return (
-    <section>
+    <section className={styles.grid}>
       {items.map((item) => (
         <CatalogCard
           key={item.id}
