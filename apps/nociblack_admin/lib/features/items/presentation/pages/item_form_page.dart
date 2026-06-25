@@ -7,8 +7,11 @@ import '../../../../core/formatters/slug_generator.dart';
 import '../../../categories/domain/repositories/category_repository.dart';
 import '../../../categories/presentation/controllers/active_categories_controller.dart';
 import '../../domain/entities/item_draft.dart';
+import '../../domain/repositories/item_image_repository.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../../domain/services/item_image_creation_service.dart';
+import '../../domain/services/item_image_display_service.dart';
+import '../../domain/services/item_image_update_service.dart';
 import '../controllers/item_form_controller.dart';
 import '../controllers/item_images_controller.dart';
 import '../widgets/item_image_picker_section.dart';
@@ -19,14 +22,20 @@ final class ItemFormPage extends StatefulWidget {
   const ItemFormPage({
     required this.categoryRepository,
     required this.itemRepository,
+    required this.itemImageRepository,
     required this.itemImageCreationService,
+    required this.itemImageUpdateService,
+    required this.itemImageDisplayService,
     this.itemToEdit,
     super.key,
   });
 
   final CategoryRepository categoryRepository;
   final ItemRepository itemRepository;
+  final ItemImageRepository itemImageRepository;
   final ItemImageCreationService itemImageCreationService;
+  final ItemImageUpdateService itemImageUpdateService;
+  final ItemImageDisplayService itemImageDisplayService;
   final CatalogItem? itemToEdit;
 
   bool get isEditing => itemToEdit != null;
@@ -52,6 +61,8 @@ final class _ItemFormPageState extends State<ItemFormPage> {
   late final Listenable _formListenable;
   String? _selectedCategoryId;
   bool _slugManuallyEdited = false;
+  bool _isLoadingExistingImages = false;
+  String? _imageLoadErrorMessage;
 
   @override
   void initState() {
@@ -62,6 +73,7 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     _itemController = ItemFormController(
       repository: widget.itemRepository,
       imageCreationService: widget.itemImageCreationService,
+      imageUpdateService: widget.itemImageUpdateService,
     );
     _itemImagesController = ItemImagesController();
     _itemImagesController.initialize(const []);
@@ -83,6 +95,9 @@ final class _ItemFormPageState extends State<ItemFormPage> {
       _itemImagesController,
     ]);
     _categoriesController.load();
+    if (widget.itemToEdit case final item?) {
+      _loadExistingImages(item.id);
+    }
   }
 
   @override
@@ -113,6 +128,29 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     }
 
     _itemImagesController.addSelectedImage(File(selectedImage.path));
+  }
+
+  Future<void> _loadExistingImages(String itemId) async {
+    setState(() {
+      _isLoadingExistingImages = true;
+      _imageLoadErrorMessage = null;
+    });
+
+    try {
+      final images = await widget.itemImageRepository.getImagesByItemId(itemId);
+      if (!mounted) return;
+      _itemImagesController.initialize(images);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _imageLoadErrorMessage =
+            'Impossible de charger les images de l’article.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingExistingImages = false);
+      }
+    }
   }
 
   Future<void> _showImageSourcePicker() async {
@@ -175,7 +213,15 @@ final class _ItemFormPageState extends State<ItemFormPage> {
                 .map((image) => image.path)
                 .toList(growable: false),
           )
-        : await _itemController.update(itemId: itemToEdit.id, draft: draft);
+        : await _itemController.update(
+            itemId: itemToEdit.id,
+            draft: draft,
+            existingImages: _itemImagesController.existingImages,
+            removedExistingImages: _itemImagesController.removedExistingImages,
+            newImageSourcePaths: _itemImagesController.newSelectedImages
+                .map((image) => image.path)
+                .toList(growable: false),
+          );
 
     if (isSaved && mounted) {
       Navigator.of(context).pop(true);
@@ -373,13 +419,39 @@ final class _ItemFormPageState extends State<ItemFormPage> {
             ),
             const SizedBox(height: 24),
 
-            if (!widget.isEditing) ...[
+            if (_isLoadingExistingImages) ...[
+              const Center(child: CircularProgressIndicator()),
+              const SizedBox(height: 24),
+            ] else ...[
+              if (_imageLoadErrorMessage case final message?) ...[
+                _ImageLoadFailureView(
+                  message: message,
+                  onRetry: widget.itemToEdit == null
+                      ? null
+                      : () => _loadExistingImages(widget.itemToEdit!.id),
+                ),
+                const SizedBox(height: 24),
+              ],
               ItemImagePickerSection(
                 imageCount: _itemImagesController.totalImageCount,
+                existingImages: _itemImagesController.existingImages,
+                removedExistingImages:
+                    _itemImagesController.removedExistingImages,
+                imageDisplayService: widget.itemImageDisplayService,
                 selectedImages: _itemImagesController.newSelectedImages,
-                onAddImagePressed: _itemController.isSubmitting
+                onAddImagePressed:
+                    _itemController.isSubmitting ||
+                        _imageLoadErrorMessage != null
                     ? null
                     : _showImageSourcePicker,
+                onRemoveExistingImage:
+                    _itemController.isSubmitting ||
+                        _imageLoadErrorMessage != null
+                    ? null
+                    : _itemImagesController.markExistingImageForRemoval,
+                onRestoreExistingImage: _itemController.isSubmitting
+                    ? null
+                    : _itemImagesController.restoreExistingImage,
                 onRemoveSelectedImage: _itemController.isSubmitting
                     ? null
                     : _itemImagesController.removeSelectedImage,
@@ -458,7 +530,7 @@ final class _ItemFormPageState extends State<ItemFormPage> {
                   : Text(
                       widget.isEditing
                           ? 'Enregistrer les modifications'
-                          : 'Créer le brouillon',
+                          : 'Enregistrer',
                     ),
             ),
           ],
@@ -530,6 +602,40 @@ final class _NoActiveCategoryView extends StatelessWidget {
           'Aucune catégorie active. Une catégorie est nécessaire avant de '
           'créer un article.',
           textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+}
+
+final class _ImageLoadFailureView extends StatelessWidget {
+  const _ImageLoadFailureView({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              message,
+              key: const Key('item_images_load_error'),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              textAlign: TextAlign.center,
+            ),
+            if (onRetry != null) ...[
+              const SizedBox(height: 12),
+              FilledButton.tonal(
+                onPressed: onRetry,
+                child: const Text('Réessayer les images'),
+              ),
+            ],
+          ],
         ),
       ),
     );

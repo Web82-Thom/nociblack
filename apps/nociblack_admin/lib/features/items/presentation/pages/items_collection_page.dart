@@ -3,8 +3,11 @@ import 'package:nociblack/features/categories/domain/repositories/category_repos
 import 'package:nociblack/features/items/presentation/pages/item_form_page.dart';
 
 import '../../domain/entities/catalog_item.dart';
+import '../../domain/repositories/item_image_repository.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../../domain/services/item_image_creation_service.dart';
+import '../../domain/services/item_image_display_service.dart';
+import '../../domain/services/item_image_update_service.dart';
 import '../controllers/items_list_controller.dart';
 import '../widgets/catalog_item_card.dart';
 import '../widgets/permanent_item_deletion_dialog.dart';
@@ -16,7 +19,10 @@ final class ItemsCollectionPage extends StatefulWidget {
     required this.itemRepository,
     required this.categoryRepository,
     required this.collection,
+    required this.itemImageRepository,
     required this.itemImageCreationService,
+    required this.itemImageUpdateService,
+    required this.itemImageDisplayService,
     super.key,
   });
 
@@ -24,7 +30,10 @@ final class ItemsCollectionPage extends StatefulWidget {
   final ItemRepository itemRepository;
   final CategoryRepository categoryRepository;
   final ItemsCollection collection;
+  final ItemImageRepository itemImageRepository;
   final ItemImageCreationService itemImageCreationService;
+  final ItemImageUpdateService itemImageUpdateService;
+  final ItemImageDisplayService itemImageDisplayService;
 
   @override
   State<ItemsCollectionPage> createState() => _ItemsCollectionPageState();
@@ -152,7 +161,10 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
         builder: (_) => ItemFormPage(
           categoryRepository: widget.categoryRepository,
           itemRepository: widget.itemRepository,
+          itemImageRepository: widget.itemImageRepository,
           itemImageCreationService: widget.itemImageCreationService,
+          itemImageUpdateService: widget.itemImageUpdateService,
+          itemImageDisplayService: widget.itemImageDisplayService,
           itemToEdit: item,
         ),
       ),
@@ -167,6 +179,7 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
     final isArchivedCollection = widget.collection == ItemsCollection.archived;
     final card = CatalogItemCard(
       item: item,
+      imageDisplayService: widget.itemImageDisplayService,
       onTap: !isArchivedCollection ? () => _openItemForm(item) : null,
     );
 

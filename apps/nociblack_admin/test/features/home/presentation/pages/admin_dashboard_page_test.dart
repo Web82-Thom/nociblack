@@ -7,7 +7,10 @@ import 'package:nociblack/features/items/domain/entities/catalog_item.dart';
 import '../../../../helpers/catalog_item_fixture.dart';
 import '../../../../helpers/fake_category_repository.dart';
 import '../../../../helpers/fake_item_repository.dart';
+import '../../../../helpers/fake_item_image_repository.dart';
 import '../../../../helpers/fake_item_image_creation_service.dart';
+import '../../../../helpers/fake_item_image_display_service.dart';
+import '../../../../helpers/fake_item_image_update_service.dart';
 
 void main() {
   const profile = AdminProfile(
@@ -29,7 +32,10 @@ void main() {
           onSignOut: () async {},
           categoryRepository: FakeCategoryRepository(),
           itemRepository: itemRepository ?? FakeItemRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );

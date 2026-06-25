@@ -167,6 +167,16 @@ final class _FakeItemImageRepository implements ItemImageRepository {
 
   @override
   Future<List<ItemImage>> getImagesByItemId(String itemId) async => const [];
+
+  @override
+  Future<void> updateItemImagePosition({
+    required String imageId,
+    required int displayOrder,
+    required bool isPrimary,
+  }) async {}
+
+  @override
+  Future<void> deleteItemImagesByIds(List<String> imageIds) async {}
 }
 
 final class _CreatedImageCall {

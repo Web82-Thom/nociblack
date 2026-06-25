@@ -9,4 +9,12 @@ abstract interface class ItemImageRepository {
     required int displayOrder,
     required bool isPrimary,
   });
+
+  Future<void> updateItemImagePosition({
+    required String imageId,
+    required int displayOrder,
+    required bool isPrimary,
+  });
+
+  Future<void> deleteItemImagesByIds(List<String> imageIds);
 }

@@ -10,7 +10,9 @@ import 'features/categories/data/repositories/supabase_category_repository.dart'
 import 'features/items/data/repositories/supabase_item_repository.dart';
 import 'features/items/data/repositories/supabase_item_image_repository.dart';
 import 'features/items/data/services/default_item_image_creation_service.dart';
+import 'features/items/data/services/default_item_image_update_service.dart';
 import 'features/items/data/services/flutter_image_processor.dart';
+import 'features/items/data/services/supabase_item_image_display_service.dart';
 import 'features/items/data/services/supabase_item_image_storage_service.dart';
 
 Future<void> main() async {
@@ -24,11 +26,27 @@ Future<void> main() async {
     Supabase.instance.client,
   );
   final itemRepository = SupabaseItemRepository(Supabase.instance.client);
+  final itemImageRepository = SupabaseItemImageRepository(
+    Supabase.instance.client,
+  );
+  final itemImageStorageService = SupabaseItemImageStorageService(
+    Supabase.instance.client,
+  );
+  final imageIdGenerator = const Uuid().v4;
   final itemImageCreationService = DefaultItemImageCreationService(
     imageProcessor: FlutterImageProcessor(),
-    storageService: SupabaseItemImageStorageService(Supabase.instance.client),
-    imageRepository: SupabaseItemImageRepository(Supabase.instance.client),
-    generateImageId: const Uuid().v4,
+    storageService: itemImageStorageService,
+    imageRepository: itemImageRepository,
+    generateImageId: imageIdGenerator,
+  );
+  final itemImageUpdateService = DefaultItemImageUpdateService(
+    imageProcessor: FlutterImageProcessor(),
+    storageService: itemImageStorageService,
+    imageRepository: itemImageRepository,
+    generateImageId: imageIdGenerator,
+  );
+  final itemImageDisplayService = SupabaseItemImageDisplayService(
+    Supabase.instance.client,
   );
 
   runApp(
@@ -36,7 +54,10 @@ Future<void> main() async {
       authRepository: authRepository,
       categoryRepository: categoryRepository,
       itemRepository: itemRepository,
+      itemImageRepository: itemImageRepository,
       itemImageCreationService: itemImageCreationService,
+      itemImageUpdateService: itemImageUpdateService,
+      itemImageDisplayService: itemImageDisplayService,
     ),
   );
 }

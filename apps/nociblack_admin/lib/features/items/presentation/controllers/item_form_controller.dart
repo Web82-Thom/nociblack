@@ -4,16 +4,21 @@ import '../../domain/entities/item_draft.dart';
 import '../../domain/errors/item_failure.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../../domain/services/item_image_creation_service.dart';
+import '../../domain/services/item_image_update_service.dart';
+import '../../domain/entities/item_image.dart';
 
 final class ItemFormController extends ChangeNotifier {
   ItemFormController({
     required ItemRepository repository,
     required ItemImageCreationService imageCreationService,
+    required ItemImageUpdateService imageUpdateService,
   }) : _repository = repository,
-       _imageCreationService = imageCreationService;
+       _imageCreationService = imageCreationService,
+       _imageUpdateService = imageUpdateService;
 
   final ItemRepository _repository;
   final ItemImageCreationService _imageCreationService;
+  final ItemImageUpdateService _imageUpdateService;
 
   bool _isSubmitting = false;
   String? _errorMessage;
@@ -67,6 +72,9 @@ final class ItemFormController extends ChangeNotifier {
   Future<bool> update({
     required String itemId,
     required ItemDraft draft,
+    List<ItemImage> existingImages = const [],
+    List<ItemImage> removedExistingImages = const [],
+    List<String> newImageSourcePaths = const [],
   }) async {
     if (_isSubmitting) return false;
 
@@ -76,6 +84,12 @@ final class ItemFormController extends ChangeNotifier {
 
     try {
       await _repository.updateItem(itemId: itemId, draft: draft);
+      await _imageUpdateService.updateImages(
+        itemId: itemId,
+        existingImages: existingImages,
+        removedExistingImages: removedExistingImages,
+        newSourcePaths: newImageSourcePaths,
+      );
       return true;
     } on ItemFailure catch (failure) {
       _errorMessage = failure.message;

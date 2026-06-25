@@ -9,7 +9,10 @@ import 'package:nociblack/features/items/presentation/pages/items_list_page.dart
 
 import '../../../../helpers/catalog_item_fixture.dart';
 import '../../../../helpers/fake_item_repository.dart';
+import '../../../../helpers/fake_item_image_repository.dart';
 import '../../../../helpers/fake_item_image_creation_service.dart';
+import '../../../../helpers/fake_item_image_display_service.dart';
+import '../../../../helpers/fake_item_image_update_service.dart';
 
 // Simple fake to satisfy the CategoryRepository dependency in tests.
 class FakeCategoryRepository implements CategoryRepository {
@@ -19,14 +22,19 @@ class FakeCategoryRepository implements CategoryRepository {
 
 void main() {
   testWidgets('renders the items returned by the repository', (tester) async {
-    final repository = FakeItemRepository(currentItems: [buildCatalogItem()]);
+    final item = buildCatalogItem();
+    final repository = FakeItemRepository(currentItems: [item]);
+    final imageDisplayService = FakeItemImageDisplayService();
 
     await tester.pumpWidget(
       MaterialApp(
         home: ItemsListPage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: imageDisplayService,
         ),
       ),
     );
@@ -37,6 +45,7 @@ void main() {
     expect(find.text('12,99 €'), findsOneWidget);
     expect(find.text('Stock : 4'), findsOneWidget);
     expect(find.text('Brouillon'), findsOneWidget);
+    expect(imageDisplayService.requestedPaths, contains(item.primaryImagePath));
   });
 
   testWidgets('renders an empty state when no item exists', (tester) async {
@@ -45,7 +54,10 @@ void main() {
         home: ItemsListPage(
           itemRepository: FakeItemRepository(),
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -64,7 +76,10 @@ void main() {
         home: ItemsListPage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -94,7 +109,10 @@ void main() {
         home: ItemsListPage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -123,7 +141,10 @@ void main() {
         home: ItemsListPage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -150,7 +171,10 @@ void main() {
         home: ItemArchivePage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -177,7 +201,10 @@ void main() {
         home: ItemArchivePage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -206,7 +233,10 @@ void main() {
         home: ItemsListPage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -245,7 +275,10 @@ void main() {
         home: ItemArchivePage(
           itemRepository: repository,
           categoryRepository: FakeCategoryRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );

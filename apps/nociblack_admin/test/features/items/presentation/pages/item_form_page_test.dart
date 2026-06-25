@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nociblack/features/categories/domain/errors/category_failure.dart';
+import 'package:nociblack/features/items/domain/entities/item_image.dart';
 import 'package:nociblack/features/items/domain/errors/item_failure.dart';
 import 'package:nociblack/features/items/presentation/pages/item_form_page.dart';
 
 import '../../../../helpers/catalog_category_fixture.dart';
+import '../../../../helpers/catalog_item_fixture.dart';
 import '../../../../helpers/fake_category_repository.dart';
 import '../../../../helpers/fake_item_repository.dart';
+import '../../../../helpers/fake_item_image_repository.dart';
 import '../../../../helpers/fake_item_image_creation_service.dart';
+import '../../../../helpers/fake_item_image_display_service.dart';
+import '../../../../helpers/fake_item_image_update_service.dart';
 
 void main() {
   testWidgets('renders active categories in the selector', (tester) async {
@@ -18,7 +23,10 @@ void main() {
         home: ItemFormPage(
           categoryRepository: FakeCategoryRepository(categories: [category]),
           itemRepository: FakeItemRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -38,7 +46,10 @@ void main() {
         home: ItemFormPage(
           categoryRepository: FakeCategoryRepository(),
           itemRepository: FakeItemRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -57,7 +68,10 @@ void main() {
         home: ItemFormPage(
           categoryRepository: repository,
           itemRepository: FakeItemRepository(),
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -87,7 +101,10 @@ void main() {
         home: ItemFormPage(
           categoryRepository: FakeCategoryRepository(categories: [category]),
           itemRepository: itemRepository,
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -118,7 +135,10 @@ void main() {
         home: ItemFormPage(
           categoryRepository: FakeCategoryRepository(categories: [category]),
           itemRepository: itemRepository,
+          itemImageRepository: FakeItemImageRepository(),
           itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: FakeItemImageUpdateService(),
+          itemImageDisplayService: FakeItemImageDisplayService(),
         ),
       ),
     );
@@ -138,6 +158,58 @@ void main() {
     expect(referenceField.focusNode.hasFocus, isTrue);
     expect(referenceField.controller.selection.isCollapsed, isTrue);
     expect(referenceField.controller.selection.baseOffset, 'REF-001'.length);
+  });
+
+  testWidgets('loads existing images and submits removed images on edit', (
+    tester,
+  ) async {
+    final category = buildCatalogCategory();
+    final item = buildCatalogItem();
+    final existingImage = ItemImage(
+      id: 'image-1',
+      itemId: item.id,
+      imageUrl: 'item-images/items/${item.id}/image-1.jpg',
+      displayOrder: 1,
+      isPrimary: true,
+      createdAt: DateTime.utc(2026, 6, 25),
+    );
+    final itemImageRepository = FakeItemImageRepository(
+      images: [existingImage],
+    );
+    final imageUpdateService = FakeItemImageUpdateService();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ItemFormPage(
+          categoryRepository: FakeCategoryRepository(categories: [category]),
+          itemRepository: FakeItemRepository(currentItems: [item]),
+          itemImageRepository: itemImageRepository,
+          itemImageCreationService: FakeItemImageCreationService(),
+          itemImageUpdateService: imageUpdateService,
+          itemImageDisplayService: FakeItemImageDisplayService(),
+          itemToEdit: item,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(itemImageRepository.lastLoadedItemId, item.id);
+    expect(find.text('Images (1/3)'), findsOneWidget);
+
+    final removeImageButton = find.byTooltip('Supprimer').last;
+    await tester.ensureVisible(removeImageButton);
+    await tester.pumpAndSettle();
+    await tester.tap(removeImageButton);
+    await tester.pumpAndSettle();
+    expect(find.text('Images (0/3)'), findsOneWidget);
+
+    await _tapSubmitButton(tester);
+    await tester.pumpAndSettle();
+
+    expect(imageUpdateService.lastItemId, item.id);
+    expect(imageUpdateService.lastExistingImages, [existingImage]);
+    expect(imageUpdateService.lastRemovedExistingImages, [existingImage]);
+    expect(imageUpdateService.lastNewSourcePaths, isEmpty);
   });
 }
 

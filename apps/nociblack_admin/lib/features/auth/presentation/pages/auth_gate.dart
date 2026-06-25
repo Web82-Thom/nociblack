@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../home/presentation/pages/admin_dashboard_page.dart';
 import '../../../categories/domain/repositories/category_repository.dart';
+import '../../../items/domain/repositories/item_image_repository.dart';
 import '../../../items/domain/repositories/item_repository.dart';
 import '../../../items/domain/services/item_image_creation_service.dart';
+import '../../../items/domain/services/item_image_display_service.dart';
+import '../../../items/domain/services/item_image_update_service.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../controllers/auth_controller.dart';
 import 'login_page.dart';
@@ -14,14 +17,20 @@ final class AuthGate extends StatefulWidget {
     required this.authRepository,
     required this.categoryRepository,
     required this.itemRepository,
+    required this.itemImageRepository,
     required this.itemImageCreationService,
+    required this.itemImageUpdateService,
+    required this.itemImageDisplayService,
     super.key,
   });
 
   final AuthRepository authRepository;
   final CategoryRepository categoryRepository;
   final ItemRepository itemRepository;
+  final ItemImageRepository itemImageRepository;
   final ItemImageCreationService itemImageCreationService;
+  final ItemImageUpdateService itemImageUpdateService;
+  final ItemImageDisplayService itemImageDisplayService;
 
   @override
   State<AuthGate> createState() => _AuthGateState();
@@ -58,7 +67,10 @@ final class _AuthGateState extends State<AuthGate> {
             onSignOut: _controller.signOut,
             categoryRepository: widget.categoryRepository,
             itemRepository: widget.itemRepository,
+            itemImageRepository: widget.itemImageRepository,
             itemImageCreationService: widget.itemImageCreationService,
+            itemImageUpdateService: widget.itemImageUpdateService,
+            itemImageDisplayService: widget.itemImageDisplayService,
           ),
         };
       },

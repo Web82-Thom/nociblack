@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nociblack/features/items/domain/entities/item_draft.dart';
+import 'package:nociblack/features/items/domain/entities/item_image.dart';
 import 'package:nociblack/features/items/domain/errors/item_failure.dart';
 import 'package:nociblack/features/items/presentation/controllers/item_form_controller.dart';
 
 import '../../../../helpers/fake_item_repository.dart';
 import '../../../../helpers/fake_item_image_creation_service.dart';
+import '../../../../helpers/fake_item_image_update_service.dart';
 
 void main() {
   const draft = ItemDraft(
@@ -23,6 +25,7 @@ void main() {
     final controller = ItemFormController(
       repository: repository,
       imageCreationService: imageCreationService,
+      imageUpdateService: FakeItemImageUpdateService(),
     );
     addTearDown(controller.dispose);
 
@@ -43,6 +46,7 @@ void main() {
     final controller = ItemFormController(
       repository: repository,
       imageCreationService: imageCreationService,
+      imageUpdateService: FakeItemImageUpdateService(),
     );
     addTearDown(controller.dispose);
 
@@ -62,6 +66,7 @@ void main() {
     final controller = ItemFormController(
       repository: repository,
       imageCreationService: imageCreationService,
+      imageUpdateService: FakeItemImageUpdateService(),
     );
     addTearDown(controller.dispose);
 
@@ -85,6 +90,7 @@ void main() {
       imageCreationService: FakeItemImageCreationService(
         failure: const ItemImageUploadFailure(),
       ),
+      imageUpdateService: FakeItemImageUpdateService(),
     );
     addTearDown(controller.dispose);
 
@@ -111,6 +117,7 @@ void main() {
       imageCreationService: FakeItemImageCreationService(
         failure: const ItemImageSaveFailure(),
       ),
+      imageUpdateService: FakeItemImageUpdateService(),
     );
     addTearDown(controller.dispose);
 
@@ -126,5 +133,37 @@ void main() {
       'L’enregistrement des images a échoué et le brouillon créé n’a pas pu '
       'être annulé automatiquement.',
     );
+  });
+
+  test('updates the item and synchronizes its image form state', () async {
+    final repository = FakeItemRepository();
+    final imageUpdateService = FakeItemImageUpdateService();
+    final controller = ItemFormController(
+      repository: repository,
+      imageCreationService: FakeItemImageCreationService(),
+      imageUpdateService: imageUpdateService,
+    );
+    addTearDown(controller.dispose);
+
+    final result = await controller.update(
+      itemId: 'item-id',
+      draft: draft,
+      existingImages: [
+        ItemImage(
+          id: 'image-1',
+          itemId: 'item-id',
+          imageUrl: 'item-images/items/item-id/image-1.jpg',
+          displayOrder: 1,
+          isPrimary: true,
+          createdAt: DateTime.utc(2026, 6, 25),
+        ),
+      ],
+      newImageSourcePaths: const ['new.png'],
+    );
+
+    expect(result, isTrue);
+    expect(repository.lastUpdatedItemId, 'item-id');
+    expect(imageUpdateService.lastItemId, 'item-id');
+    expect(imageUpdateService.lastNewSourcePaths, const ['new.png']);
   });
 }

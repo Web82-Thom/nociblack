@@ -65,6 +65,11 @@ final class ItemImagesLoadFailure extends ItemFailure {
     : super('Impossible de charger les images de l’article.');
 }
 
+final class ItemImageDisplayFailure extends ItemFailure {
+  const ItemImageDisplayFailure()
+    : super('Impossible d’afficher cette image pour le moment.');
+}
+
 final class ItemImageCleanupFailure extends ItemFailure {
   const ItemImageCleanupFailure()
     : super('L’image n’a pas pu être nettoyée après l’échec.');

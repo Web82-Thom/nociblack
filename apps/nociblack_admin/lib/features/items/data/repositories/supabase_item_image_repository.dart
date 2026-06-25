@@ -49,6 +49,37 @@ final class SupabaseItemImageRepository implements ItemImageRepository {
     }
   }
 
+  @override
+  Future<void> updateItemImagePosition({
+    required String imageId,
+    required int displayOrder,
+    required bool isPrimary,
+  }) async {
+    try {
+      await _supabase
+          .from('item_images')
+          .update({'display_order': displayOrder, 'is_primary': isPrimary})
+          .eq('id', imageId)
+          .select('id')
+          .single();
+    } catch (_) {
+      throw const ItemImageSaveFailure();
+    }
+  }
+
+  @override
+  Future<void> deleteItemImagesByIds(List<String> imageIds) async {
+    if (imageIds.isEmpty) {
+      return;
+    }
+
+    try {
+      await _supabase.from('item_images').delete().inFilter('id', imageIds);
+    } catch (_) {
+      throw const ItemImageSaveFailure();
+    }
+  }
+
   ItemImage _mapRowToItemImage(Map<String, dynamic> row) {
     return ItemImage(
       id: row['id'] as String,

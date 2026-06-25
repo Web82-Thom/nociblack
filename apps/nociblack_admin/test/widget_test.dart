@@ -6,7 +6,10 @@ import 'package:nociblack/features/auth/domain/errors/auth_failure.dart';
 import 'helpers/fake_auth_repository.dart';
 import 'helpers/fake_category_repository.dart';
 import 'helpers/fake_item_repository.dart';
+import 'helpers/fake_item_image_repository.dart';
 import 'helpers/fake_item_image_creation_service.dart';
+import 'helpers/fake_item_image_display_service.dart';
+import 'helpers/fake_item_image_update_service.dart';
 
 void main() {
   testWidgets('displays the administrator login page without a session', (
@@ -20,7 +23,10 @@ void main() {
         authRepository: repository,
         categoryRepository: FakeCategoryRepository(),
         itemRepository: FakeItemRepository(),
+        itemImageRepository: FakeItemImageRepository(),
         itemImageCreationService: FakeItemImageCreationService(),
+        itemImageUpdateService: FakeItemImageUpdateService(),
+        itemImageDisplayService: FakeItemImageDisplayService(),
       ),
     );
     await tester.pumpAndSettle();
@@ -46,7 +52,10 @@ void main() {
         authRepository: repository,
         categoryRepository: FakeCategoryRepository(),
         itemRepository: FakeItemRepository(),
+        itemImageRepository: FakeItemImageRepository(),
         itemImageCreationService: FakeItemImageCreationService(),
+        itemImageUpdateService: FakeItemImageUpdateService(),
+        itemImageDisplayService: FakeItemImageDisplayService(),
       ),
     );
     await tester.pumpAndSettle();
@@ -84,7 +93,10 @@ void main() {
         authRepository: repository,
         categoryRepository: FakeCategoryRepository(),
         itemRepository: FakeItemRepository(),
+        itemImageRepository: FakeItemImageRepository(),
         itemImageCreationService: FakeItemImageCreationService(),
+        itemImageUpdateService: FakeItemImageUpdateService(),
+        itemImageDisplayService: FakeItemImageDisplayService(),
       ),
     );
     await tester.pumpAndSettle();
