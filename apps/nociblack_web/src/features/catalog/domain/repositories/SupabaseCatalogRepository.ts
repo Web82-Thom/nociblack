@@ -20,6 +20,7 @@ type CatalogItemRow = {
   item_images: {
     image_url: string;
     is_primary: boolean;
+    display_order: number;
   }[];
 };
 
@@ -36,6 +37,31 @@ function getPublicImageUrl(imagePath: string | null): string | null {
 }
 
 export class SupabaseCatalogRepository implements CatalogRepository {
+  private mapCatalogItem(row: CatalogItemRow): CatalogItem {
+    const orderedImages = [...row.item_images].sort(
+      (leftImage, rightImage) =>
+        leftImage.display_order - rightImage.display_order,
+    );
+    const primaryImage =
+      orderedImages.find((image) => image.is_primary) ?? orderedImages[0];
+    return {
+      id: row.id,
+      title: row.title,
+      slug: row.slug,
+      description: row.description,
+      priceCents: row.price_cents,
+      categoryId: row.category_id,
+      categoryName: row.categories?.name ?? "",
+      stockQuantity: row.stock_quantity,
+      primaryImageUrl: getPublicImageUrl(primaryImage?.image_url ?? null),
+      imageUrls: orderedImages
+        .map((image) => getPublicImageUrl(image.image_url))
+        .filter((imageUrl): imageUrl is string => imageUrl !== null),
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+
   async getPublishedItems(): Promise<CatalogItem[]> {
     const { data, error } = await supabase
       .from("items")
@@ -55,7 +81,8 @@ export class SupabaseCatalogRepository implements CatalogRepository {
         ),
         item_images (
           image_url,
-          is_primary
+          is_primary,
+          display_order
         )
       `,
       )
@@ -69,27 +96,46 @@ export class SupabaseCatalogRepository implements CatalogRepository {
 
     const rows = (data ?? []) as unknown as CatalogItemRow[];
 
-    return rows.map((row) => {
-      const primaryImage =
-        row.item_images.find((image) => image.is_primary) ?? row.item_images[0];
+    return rows.map((row) => this.mapCatalogItem(row));
+  }
 
-      return {
-        id: row.id,
-        title: row.title,
-        slug: row.slug,
-        description: row.description,
-        priceCents: row.price_cents,
+  async getPublishedItemBySlug(slug: string): Promise<CatalogItem | null> {
+    const { data, error } = await supabase
+      .from("items")
+      .select(
+        `
+      id,
+      title,
+      slug,
+      description,
+      price_cents,
+      category_id,
+      stock_quantity,
+      created_at,
+      updated_at,
+      categories (
+        name
+      ),
+      item_images (
+        image_url,
+        is_primary,
+        display_order
+      )
+    `,
+      )
+      .eq("status", "PUBLISHED")
+      .eq("slug", slug)
+      .maybeSingle();
 
-        categoryId: row.category_id,
-        categoryName: row.categories?.name ?? "",
+    if (error) {
+      throw error;
+    }
 
-        stockQuantity: row.stock_quantity,
+    if (!data) {
+      return null;
+    }
+    const row = data as unknown as CatalogItemRow;
 
-        primaryImageUrl: getPublicImageUrl(primaryImage?.image_url ?? null),
-
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-      };
-    });
+    return this.mapCatalogItem(row);
   }
 }

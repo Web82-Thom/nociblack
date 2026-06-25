@@ -1,14 +1,13 @@
-import type { CatalogItem } from '../../domain/entities/CatalogItem';
+import type { CatalogItem } from "../../domain/entities/CatalogItem";
+import { Link } from "react-router";
 
-import styles from './CatalogCard.module.css';
+import styles from "./CatalogCard.module.css";
 
 type CatalogCardProps = {
   item: CatalogItem;
 };
 
-export function CatalogCard({
-  item,
-}: CatalogCardProps) {
+export function CatalogCard({ item }: CatalogCardProps) {
   return (
     <article className={styles.card}>
       <div className={styles.imageContainer}>
@@ -19,20 +18,14 @@ export function CatalogCard({
             alt={item.title}
           />
         ) : (
-          <div className={styles.imagePlaceholder}>
-            Aucune image
-          </div>
+          <div className={styles.imagePlaceholder}>Aucune image</div>
         )}
       </div>
 
       <div className={styles.content}>
-        <h2 className={styles.title}>
-          {item.title}
-        </h2>
+        <h2 className={styles.title}>{item.title}</h2>
 
-        <p className={styles.category}>
-          {item.categoryName}
-        </p>
+        <p className={styles.category}>{item.categoryName}</p>
 
         {/*
           Prix volontairement masqué en V1.
@@ -42,12 +35,9 @@ export function CatalogCard({
           </p>
         */}
 
-        <button
-          className={styles.button}
-          type="button"
-        >
+        <Link className={styles.button} to={`/articles/${item.slug}`}>
           Voir le produit
-        </button>
+        </Link>
       </div>
     </article>
   );
