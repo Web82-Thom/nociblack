@@ -363,6 +363,21 @@ final class _ItemFormPageState extends State<ItemFormPage> {
     }
   }
 
+  void _normalizeSku(String value) {
+    final normalizedValue = value
+        .trimLeft()
+        .toUpperCase()
+        .replaceAll(RegExp(r'\s+'), '_')
+        .replaceAll(RegExp(r'_+'), '_');
+
+    if (normalizedValue == value) return;
+
+    _skuController.value = TextEditingValue(
+      text: normalizedValue,
+      selection: TextSelection.collapsed(offset: normalizedValue.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -552,6 +567,7 @@ final class _ItemFormPageState extends State<ItemFormPage> {
               textCapitalization: TextCapitalization.characters,
               textInputAction: TextInputAction.next,
               decoration: const InputDecoration(labelText: 'REF'),
+              onChanged: _normalizeSku,
               validator: _validateRequired,
             ),
             const SizedBox(height: 16),
