@@ -96,6 +96,12 @@ invalides, si la catégorie est inactive ou si aucune image n'est associée à l
   maximale du résultat stocké de 5 Mo.
 - Le chemin stable suit `item-images/items/{item_id}/{image_id}.jpg` et ne dépend
   jamais de l'ordre d'affichage.
+- Dans l'Admin, une modification peut conserver des images existantes, en retirer
+  une ou plusieurs et ajouter de nouvelles images jusqu'à la limite de trois.
+- Les images retirées sont marquées dans le formulaire et peuvent être restaurées
+  avant sauvegarde.
+- Après sauvegarde, les positions sont renumérotées à partir de 1 et la position 1
+  redevient automatiquement l'image principale.
 
 La base de données doit empêcher la publication d'un article sans image. Ce contrôle
 ne doit pas dépendre uniquement de l'application Flutter.

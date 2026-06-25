@@ -95,7 +95,7 @@ Une image d'article comporte deux éléments liés :
 1. l'objet binaire dans `item-images` ;
 2. la ligne correspondante dans `item_images`.
 
-Le service média devra traiter l'opération comme un workflow cohérent :
+Le service média traite l'opération comme un workflow cohérent :
 
 - valider le fichier avant l'upload ;
 - uploader l'objet ;
@@ -168,6 +168,14 @@ Avant l'upload, l'application Android devra :
 Ces contrôles améliorent l'expérience utilisateur, mais ne remplacent jamais les
 contraintes Supabase.
 
+Le formulaire Admin charge les images existantes depuis `item_images`, affiche les
+objets privés avec des URL signées temporaires, puis transmet au service de mise à
+jour l'état final voulu : images conservées, images retirées et nouvelles sources.
+Les nouvelles sources sont converties en JPEG et uploadées avant l'écriture en base.
+En cas d'échec d'écriture, les nouveaux objets uploadés sont nettoyés. Les anciens
+objets retirés ne sont supprimés du Storage qu'après succès de la persistance afin
+de ne pas perdre une image encore référencée.
+
 ## 8. Implémentation et validation
 
 Les buckets `item-images` et `brand-assets` ainsi que leurs politiques RLS sont
@@ -184,5 +192,8 @@ Il valide les lectures publiques, les uploads administratifs, les chemins autori
 la séparation `ADMIN` / `SUPER_ADMIN` et la révocation des droits après
 désactivation.
 
-Supabase interdit les suppressions directes dans `storage.objects`. Les remplacements
-et suppressions seront donc testés via l'API Storage pendant l'intégration Flutter.
+Supabase interdit les suppressions directes dans `storage.objects`. Les suppressions
+unitaires d'images sont donc exécutées via l'API Storage par Flutter après mise à
+jour des lignes `item_images`. Les tests Flutter couvrent l'orchestration et les
+compensations ; une validation réelle Supabase reste à faire pour le flux de
+modification avec ajout et suppression.

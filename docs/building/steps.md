@@ -88,14 +88,18 @@
 - [x] Compenser automatiquement le brouillon en cas d'échec du workflow image
 - [x] Valider réellement des brouillons avec une et deux images sur Supabase
 - [x] Valider l'analyse statique et les 72 tests Flutter
+- [x] Afficher l'image principale privée dans les cartes Articles via URL signée
+- [x] Charger les images existantes dans le formulaire de modification
+- [x] Supprimer, restaurer avant sauvegarde et renuméroter les images existantes
+- [x] Ajouter de nouvelles images lors d'une modification d'article
+- [x] Valider l'analyse statique et les 76 tests Flutter
 
 ## À venir
 
 - [ ] Valider réellement la suppression d'un article avec ses images Storage
-- [ ] Charger et ajouter les images existantes en modification
-- [ ] Supprimer et renuméroter proprement les images existantes
+- [ ] Valider réellement la modification d'un article avec suppression et ajout d'images Storage
 - [ ] Implémenter la publication des articles
-- [ ] Tester les suppressions et remplacements Storage depuis Flutter
+- [ ] Tester les remplacements Storage depuis Flutter avec des images réelles
 
 ## Commandes Supabase
 
