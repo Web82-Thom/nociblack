@@ -12,6 +12,7 @@ final class FakeItemRepository implements ItemRepository {
     this.archivedFailure,
     this.saveFailure,
     this.archiveFailure,
+    this.publishFailure,
     this.restoreFailure,
     this.deleteFailure,
     this.deletionResult = const ItemDeletionResult(
@@ -21,23 +22,31 @@ final class FakeItemRepository implements ItemRepository {
 
   List<CatalogItem> currentItems;
   List<CatalogItem> archivedItems;
+
   ItemFailure? currentFailure;
   ItemFailure? archivedFailure;
   ItemFailure? saveFailure;
   ItemFailure? archiveFailure;
+  ItemFailure? publishFailure;
   ItemFailure? restoreFailure;
   ItemFailure? deleteFailure;
+
   ItemDeletionResult deletionResult;
+
   ItemDraft? lastCreatedDraft;
-  int currentCalls = 0;
-  int archivedCalls = 0;
   ItemDraft? lastUpdatedDraft;
+
   String? lastUpdatedItemId;
   String? lastArchivedItemId;
-  int archiveCalls = 0;
+  String? lastPublishedItemId;
   String? lastRestoredItemId;
-  int restoreCalls = 0;
   String? lastDeletedItemId;
+
+  int currentCalls = 0;
+  int archivedCalls = 0;
+  int archiveCalls = 0;
+  int publishCalls = 0;
+  int restoreCalls = 0;
   int deleteCalls = 0;
   int retryCleanupCalls = 0;
 
@@ -58,8 +67,11 @@ final class FakeItemRepository implements ItemRepository {
   @override
   Future<CatalogItem> createItem(ItemDraft draft) async {
     if (saveFailure case final failure?) throw failure;
+
     lastCreatedDraft = draft;
+
     final now = DateTime.utc(2026, 6, 24, 12);
+
     final item = CatalogItem(
       id: 'created-item-id',
       categoryId: draft.categoryId,
@@ -74,7 +86,9 @@ final class FakeItemRepository implements ItemRepository {
       createdAt: now,
       updatedAt: now,
     );
+
     currentItems = [...currentItems, item];
+
     return item;
   }
 
@@ -119,9 +133,40 @@ final class FakeItemRepository implements ItemRepository {
     if (archiveFailure case final failure?) throw failure;
 
     lastArchivedItemId = itemId;
+
     currentItems = [
       for (final item in currentItems)
         if (item.id != itemId) item,
+    ];
+  }
+
+  @override
+  Future<void> publishItem(String itemId) async {
+    publishCalls++;
+    if (publishFailure case final failure?) throw failure;
+
+    lastPublishedItemId = itemId;
+
+    currentItems = [
+      for (final item in currentItems)
+        if (item.id == itemId)
+          CatalogItem(
+            id: item.id,
+            categoryId: item.categoryId,
+            categoryName: item.categoryName,
+            title: item.title,
+            description: item.description,
+            priceCents: item.priceCents,
+            stockQuantity: item.stockQuantity,
+            sku: item.sku,
+            status: ItemStatus.published,
+            displayOrder: item.displayOrder,
+            createdAt: item.createdAt,
+            updatedAt: DateTime.utc(2026, 6, 24, 12),
+            primaryImagePath: item.primaryImagePath,
+          )
+        else
+          item,
     ];
   }
 
@@ -131,11 +176,14 @@ final class FakeItemRepository implements ItemRepository {
     if (restoreFailure case final failure?) throw failure;
 
     final archivedItem = archivedItems.firstWhere((item) => item.id == itemId);
+
     lastRestoredItemId = itemId;
+
     archivedItems = [
       for (final item in archivedItems)
         if (item.id != itemId) item,
     ];
+
     currentItems = [
       ...currentItems,
       CatalogItem(
@@ -162,14 +210,17 @@ final class FakeItemRepository implements ItemRepository {
     if (deleteFailure case final failure?) throw failure;
 
     lastDeletedItemId = itemId;
+
     currentItems = [
       for (final item in currentItems)
         if (item.id != itemId) item,
     ];
+
     archivedItems = [
       for (final item in archivedItems)
         if (item.id != itemId) item,
     ];
+
     return deletionResult;
   }
 

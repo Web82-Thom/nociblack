@@ -26,11 +26,11 @@ final class ItemFormController extends ChangeNotifier {
   bool get isSubmitting => _isSubmitting;
   String? get errorMessage => _errorMessage;
 
-  Future<bool> create(
+  Future<String?> create(
     ItemDraft draft, {
     List<String> imageSourcePaths = const [],
   }) async {
-    if (_isSubmitting) return false;
+    if (_isSubmitting) return null;
 
     _isSubmitting = true;
     _errorMessage = null;
@@ -45,24 +45,21 @@ final class ItemFormController extends ChangeNotifier {
           sourcePaths: imageSourcePaths,
         );
       } on ItemFailure catch (failure) {
-        // La soumission du formulaire représente un seul agrégat pour
-        // l'utilisateur. Le brouillon est donc supprimé si ses images ne
-        // peuvent pas être enregistrées, ce qui rend le retry idempotent.
         try {
           await _repository.deleteItem(createdItem.id);
         } on ItemFailure {
           _errorMessage = const ItemCreationRollbackFailure().message;
-          return false;
+          return null;
         }
 
         _errorMessage = failure.message;
-        return false;
+        return null;
       }
 
-      return true;
+      return createdItem.id;
     } on ItemFailure catch (failure) {
       _errorMessage = failure.message;
-      return false;
+      return null;
     } finally {
       _isSubmitting = false;
       notifyListeners();
@@ -118,6 +115,25 @@ final class ItemFormController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> publish(String itemId) async {
+  if (_isSubmitting) return false;
+
+  _isSubmitting = true;
+  _errorMessage = null;
+  notifyListeners();
+
+  try {
+    await _repository.publishItem(itemId);
+    return true;
+  } on ItemFailure catch (failure) {
+    _errorMessage = failure.message;
+    return false;
+  } finally {
+    _isSubmitting = false;
+    notifyListeners();
+  }
+}
 
   Future<bool> delete(String itemId) async {
     if (_isSubmitting) return false;

@@ -44,7 +44,7 @@ void main() {
     expect(find.text('Catégorie test • REF SKU-TEST'), findsOneWidget);
     expect(find.text('12,99 €'), findsOneWidget);
     expect(find.text('Stock : 4'), findsOneWidget);
-    expect(find.text('Brouillon'), findsOneWidget);
+    expect(find.text('Publier'), findsOneWidget);
     expect(imageDisplayService.requestedPaths, contains(item.primaryImagePath));
   });
 

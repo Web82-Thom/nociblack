@@ -143,6 +143,24 @@ final class SupabaseItemRepository implements ItemRepository {
   }
 
   @override
+  Future<void> publishItem(String itemId) async {
+    try {
+      await _client
+          .from('items')
+          .update({
+            'status': 'PUBLISHED',
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
+          })
+          .eq('id', itemId)
+          .eq('status', 'DRAFT')
+          .select('id')
+          .single();
+    } catch (_) {
+      throw const ItemSaveFailure();
+    }
+  }
+
+  @override
   Future<void> restoreItem(String itemId) async {
     try {
       await _client

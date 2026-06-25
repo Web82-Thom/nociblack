@@ -112,6 +112,8 @@ void main() {
     await _fillRequiredFields(tester);
     await _tapSubmitButton(tester);
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Plus tard'));
+    await tester.pumpAndSettle();
 
     final draft = itemRepository.lastCreatedDraft!;
     expect(draft.categoryId, category.id);

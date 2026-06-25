@@ -175,12 +175,57 @@ final class _ItemsCollectionPageState extends State<ItemsCollectionPage> {
     }
   }
 
+  Future<void> _confirmPublish(String itemId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Publier l’article'),
+          content: const Text(
+            'Une fois publié, l’article sera immédiatement visible sur le site.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Publier'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await widget.itemRepository.publishItem(itemId);
+      await _controller.load();
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('✓ Article publié avec succès.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossible de publier l’article.')),
+      );
+    }
+  }
+
   Widget _buildItemCard(CatalogItem item) {
     final isArchivedCollection = widget.collection == ItemsCollection.archived;
     final card = CatalogItemCard(
       item: item,
       imageDisplayService: widget.itemImageDisplayService,
       onTap: !isArchivedCollection ? () => _openItemForm(item) : null,
+      onPublishPressed: item.status == ItemStatus.draft
+          ? () => _confirmPublish(item.id)
+          : null,
     );
 
     return Dismissible(

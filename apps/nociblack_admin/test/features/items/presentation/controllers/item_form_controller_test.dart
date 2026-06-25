@@ -31,7 +31,7 @@ void main() {
 
     final result = await controller.create(draft);
 
-    expect(result, isTrue);
+    expect(result, 'created-item-id');
     expect(repository.lastCreatedDraft, draft);
     expect(repository.currentItems.single.status.name, 'draft');
     expect(imageCreationService.lastItemId, 'created-item-id');
@@ -52,7 +52,7 @@ void main() {
 
     final result = await controller.create(draft);
 
-    expect(result, isFalse);
+    expect(result, isNull);
     expect(
       controller.errorMessage,
       'Un article possède déjà ce slug ou cette REF.',
@@ -75,7 +75,7 @@ void main() {
       imageSourcePaths: const ['first.png', 'second.heic'],
     );
 
-    expect(result, isTrue);
+    expect(result, 'created-item-id');
     expect(imageCreationService.lastItemId, 'created-item-id');
     expect(imageCreationService.lastSourcePaths, const [
       'first.png',
@@ -99,7 +99,7 @@ void main() {
       imageSourcePaths: const ['first.png'],
     );
 
-    expect(result, isFalse);
+    expect(result, isNull);
     expect(repository.lastDeletedItemId, 'created-item-id');
     expect(repository.currentItems, isEmpty);
     expect(
@@ -126,7 +126,7 @@ void main() {
       imageSourcePaths: const ['first.png'],
     );
 
-    expect(result, isFalse);
+    expect(result, isNull);
     expect(repository.currentItems.single.id, 'created-item-id');
     expect(
       controller.errorMessage,

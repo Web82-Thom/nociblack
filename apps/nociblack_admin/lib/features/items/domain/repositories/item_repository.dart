@@ -19,6 +19,9 @@ abstract interface class ItemRepository {
 
   Future<void> archiveItem(String itemId);
 
+  /// Publie un article brouillon pour le rendre visible sur le site public.
+  Future<void> publishItem(String itemId);
+
   /// Restaure un article archivé en brouillon, conformément à la règle métier.
   Future<void> restoreItem(String itemId);
 

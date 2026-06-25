@@ -10,12 +10,14 @@ final class CatalogItemCard extends StatelessWidget {
     required this.item,
     required this.imageDisplayService,
     this.onTap,
+    this.onPublishPressed,
     super.key,
   });
 
   final CatalogItem item;
   final ItemImageDisplayService imageDisplayService;
   final VoidCallback? onTap;
+  final VoidCallback? onPublishPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,10 @@ final class CatalogItemCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        _ItemStatusChip(status: item.status),
+                        _ItemStatusChip(
+                          status: item.status,
+                          onPublishPressed: onPublishPressed,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -77,18 +82,40 @@ final class CatalogItemCard extends StatelessWidget {
 }
 
 final class _ItemStatusChip extends StatelessWidget {
-  const _ItemStatusChip({required this.status});
+  const _ItemStatusChip({required this.status, required this.onPublishPressed});
 
   final ItemStatus status;
+  final VoidCallback? onPublishPressed;
 
   @override
   Widget build(BuildContext context) {
-    final label = switch (status) {
-      ItemStatus.draft => 'Brouillon',
-      ItemStatus.published => 'Publié',
-      ItemStatus.archived => 'Archivé',
+    return switch (status) {
+      ItemStatus.draft => ActionChip(
+        visualDensity: VisualDensity.compact,
+        avatar: const Icon(
+          Icons.publish_outlined,
+          size: 18,
+          color: Colors.orange,
+        ),
+        label: const Text(
+          'Publier',
+          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.w600),
+        ),
+        onPressed: onPublishPressed,
+      ),
+      ItemStatus.published => const Chip(
+        visualDensity: VisualDensity.compact,
+        avatar: Icon(Icons.check_circle_outline, size: 18, color: Colors.green),
+        label: Text(
+          'Publié',
+          style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600),
+        ),
+      ),
+      ItemStatus.archived => const Chip(
+        visualDensity: VisualDensity.compact,
+        avatar: Icon(Icons.archive_outlined, size: 18),
+        label: Text('Archivé'),
+      ),
     };
-
-    return Chip(visualDensity: VisualDensity.compact, label: Text(label));
   }
 }

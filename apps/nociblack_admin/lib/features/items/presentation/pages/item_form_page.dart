@@ -206,34 +206,92 @@ final class _ItemFormPageState extends State<ItemFormPage> {
 
     final itemToEdit = widget.itemToEdit;
 
-    final isSaved = itemToEdit == null
-        ? await _itemController.create(
-            draft,
-            imageSourcePaths: _itemImagesController.newSelectedImages
-                .map((image) => image.path)
-                .toList(growable: false),
-          )
-        : await _itemController.update(
-            itemId: itemToEdit.id,
-            draft: draft,
-            existingImages: _itemImagesController.existingImages,
-            removedExistingImages: _itemImagesController.removedExistingImages,
-            newImageSourcePaths: _itemImagesController.newSelectedImages
-                .map((image) => image.path)
-                .toList(growable: false),
-          );
+    if (itemToEdit == null) {
+      final createdItemId = await _itemController.create(
+        draft,
+        imageSourcePaths: _itemImagesController.newSelectedImages
+            .map((image) => image.path)
+            .toList(growable: false),
+      );
 
-    if (isSaved && mounted) {
+      if (createdItemId == null) {
+        _focusReferenceFieldIfMounted();
+        return;
+      }
+
+      if (!mounted) return;
+
+      final shouldPublish = await _showPublishDialog();
+
+      if (!mounted) return;
+
+      if (shouldPublish) {
+        final isPublished = await _itemController.publish(createdItemId);
+
+        if (!isPublished) {
+          _focusReferenceFieldIfMounted();
+          return;
+        }
+      }
+
+      if (!mounted) return;
+
       Navigator.of(context).pop(true);
       return;
     }
 
-    if (mounted) {
-      _referenceFocusNode.requestFocus();
-      _skuController.selection = TextSelection.collapsed(
-        offset: _skuController.text.length,
-      );
+    final isUpdated = await _itemController.update(
+      itemId: itemToEdit.id,
+      draft: draft,
+      existingImages: _itemImagesController.existingImages,
+      removedExistingImages: _itemImagesController.removedExistingImages,
+      newImageSourcePaths: _itemImagesController.newSelectedImages
+          .map((image) => image.path)
+          .toList(growable: false),
+    );
+
+    if (isUpdated && mounted) {
+      Navigator.of(context).pop(true);
+      return;
     }
+
+    _focusReferenceFieldIfMounted();
+  }
+
+  Future<bool> _showPublishDialog() async {
+    final shouldPublish = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Article enregistré'),
+          content: const Text(
+            'L’article est actuellement enregistré comme brouillon.\n\n'
+            'Souhaitez-vous le publier maintenant ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Plus tard'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Publier'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return shouldPublish ?? false;
+  }
+
+  void _focusReferenceFieldIfMounted() {
+    if (!mounted) return;
+
+    _referenceFocusNode.requestFocus();
+    _skuController.selection = TextSelection.collapsed(
+      offset: _skuController.text.length,
+    );
   }
 
   Future<void> _confirmArchive() async {
