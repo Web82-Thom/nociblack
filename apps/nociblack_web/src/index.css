@@ -3,7 +3,12 @@
   --color-white: #f8f8f8;
   --color-gold: #d4af37;
 
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--color-white);
@@ -24,6 +29,7 @@
 html {
   min-width: 320px;
   background-color: var(--color-black);
+  scroll-behavior: smooth;
 }
 
 body {
@@ -46,4 +52,25 @@ img {
 
 #root {
   min-height: 100vh;
+}
+
+/* ========================= */
+/* INTERACTIONS GLOBALES */
+/* ========================= */
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+img {
+  -webkit-user-select: none;
+  user-select: none;
 }

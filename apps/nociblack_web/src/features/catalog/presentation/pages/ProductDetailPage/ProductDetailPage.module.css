@@ -3,6 +3,7 @@
   padding: 3rem 2rem;
   background: #0f0f0f;
   color: white;
+  cursor: default;
 }
 
 .backLink {
@@ -11,6 +12,15 @@
   color: #d4af37;
   font-weight: 600;
   text-decoration: none;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
 }
 
 .product {
@@ -39,6 +49,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .category {
@@ -72,6 +84,8 @@
   background: #151515;
   border: 1px solid rgba(212, 175, 55, 0.25);
   border-radius: 18px;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .infoBox span {

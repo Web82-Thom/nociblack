@@ -3,6 +3,9 @@
   display: flex;
   flex-direction: column;
   background: #0f0f0f;
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .header {
@@ -24,6 +27,10 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-decoration: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: pointer;
 }
 
 .nav {
@@ -39,6 +46,10 @@
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: pointer;
 }
 
 .nav a::after {
@@ -75,10 +86,16 @@
   overflow: hidden;
   background:
     radial-gradient(circle at top, rgba(212, 175, 55, 0.16), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      rgba(255, 255, 255, 0.01)
+    );
   border: 1px solid rgba(212, 175, 55, 0.18);
   border-radius: 28px;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .intro::before {
@@ -87,7 +104,12 @@
   inset: 1px;
   pointer-events: none;
   border-radius: 27px;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.16), transparent 35%, rgba(255, 255, 255, 0.04));
+  background: linear-gradient(
+    135deg,
+    rgba(212, 175, 55, 0.16),
+    transparent 35%,
+    rgba(255, 255, 255, 0.04)
+  );
 }
 
 .eyebrow {
@@ -144,6 +166,10 @@
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: pointer;
 }
 
 .heroButton:hover {
@@ -153,6 +179,7 @@
 
 .catalogSection {
   margin-top: 2rem;
+  scroll-margin-top: 120px;
 }
 
 /*___FOOTER___*/
@@ -161,6 +188,8 @@
   padding: 3rem 2rem 1.5rem;
   background: #151515;
   border-top: 1px solid rgba(212, 175, 55, 0.16);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .footerContent {
@@ -190,6 +219,9 @@
 .footerLinks {
   display: flex;
   gap: 1.5rem;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: pointer;
 }
 
 .footerLinks a {
@@ -214,9 +246,9 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-      /*_____________*/
-      /*____MEDIA____*/
-      /*_____________*/
+/*_____________*/
+/*____MEDIA____*/
+/*_____________*/
 
 @media (max-width: 768px) {
   .footerContent {
@@ -235,6 +267,8 @@
   .header {
     flex-direction: column;
     gap: 1rem;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .nav {

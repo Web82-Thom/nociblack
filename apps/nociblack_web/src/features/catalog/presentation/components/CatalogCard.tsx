@@ -16,6 +16,7 @@ export function CatalogCard({ item }: CatalogCardProps) {
             className={styles.image}
             src={item.primaryImageUrl}
             alt={item.title}
+            draggable={false}
           />
         ) : (
           <div className={styles.imagePlaceholder}>Aucune image</div>
@@ -35,7 +36,12 @@ export function CatalogCard({ item }: CatalogCardProps) {
           </p>
         */}
 
-        <Link className={styles.button} to={`/articles/${item.slug}`}>
+        <Link
+          className={styles.button}
+          to={`/articles/${item.slug}`}
+          draggable={false}
+          onDragStart={(event) => event.preventDefault()}
+        >
           Voir le produit
         </Link>
       </div>

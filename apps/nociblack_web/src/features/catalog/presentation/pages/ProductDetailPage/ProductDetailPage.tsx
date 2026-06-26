@@ -1,10 +1,11 @@
-import { Link, useParams } from "react-router";
+import { Link, useParams, useNavigate } from "react-router";
 
 import styles from "./ProductDetailPage.module.css";
 import { useProductDetail } from "../../../hooks/useProductDetail";
 import { ProductImageCarousel } from "../../components/ProductImageCarousel";
 
 export function ProductDetailPage() {
+  const navigate = useNavigate();
   const { slug } = useParams();
   const { item, isLoading, errorMessage } = useProductDetail(slug);
   console.log("Product detail item:", item);
@@ -19,9 +20,21 @@ export function ProductDetailPage() {
   if (errorMessage || !item) {
     return (
       <main className={styles.page}>
-        <Link className={styles.backLink} to="/">
+        <button
+          type="button"
+          className={styles.backLink}
+          draggable={false}
+          onDragStart={(event) => event.preventDefault()}
+          onClick={() => {
+            navigate("/", {
+              state: {
+                scrollToCatalog: true,
+              },
+            });
+          }}
+        >
           ← Retour au catalogue
-        </Link>
+        </button>
 
         <p>{errorMessage ?? "Article introuvable."}</p>
       </main>
@@ -29,9 +42,21 @@ export function ProductDetailPage() {
   }
   return (
     <main className={styles.page}>
-      <Link className={styles.backLink} to="/">
+      <button
+        type="button"
+        className={styles.backLink}
+        draggable={false}
+        onDragStart={(event) => event.preventDefault()}
+        onClick={() => {
+          navigate("/", {
+            state: {
+              scrollToCatalog: true,
+            },
+          });
+        }}
+      >
         ← Retour au catalogue
-      </Link>
+      </button>
 
       <section className={styles.product}>
         <div className={styles.imageWrapper}>

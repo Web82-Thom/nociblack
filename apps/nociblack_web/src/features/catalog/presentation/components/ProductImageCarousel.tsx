@@ -21,7 +21,12 @@ export function ProductImageCarousel({
 
   return (
     <div className={styles.carousel}>
-      <img src={selectedImageUrl} alt={title} className={styles.mainImage} />
+      <img
+        src={selectedImageUrl}
+        alt={title}
+        className={styles.mainImage}
+        draggable={false}
+      />
       {imageUrls.length > 1 && (
         <div className={styles.thumbnails}>
           {imageUrls.map((imageUrl, imageIndex) => (
@@ -39,6 +44,7 @@ export function ProductImageCarousel({
                 src={imageUrl}
                 alt={`${title} ${imageIndex + 1}`}
                 className={styles.thumbnailImage}
+                draggable={false}
               />
             </button>
           ))}

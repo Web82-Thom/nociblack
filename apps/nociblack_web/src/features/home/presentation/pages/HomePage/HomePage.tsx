@@ -1,15 +1,45 @@
 import { CatalogPage } from "../../../../catalog/presentation/pages/CatalogPage";
 import styles from "./HomePage.module.css";
+import { useEffect } from "react";
+import { useLocation } from "react-router";
 
 export function HomePage() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.state?.scrollToCatalog) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      setTimeout(() => {
+        const catalogSection = document.getElementById("catalog");
+
+        catalogSection?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    });
+  }, [location.state]);
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <a className={styles.brand} href="/">
+        <a
+          className={styles.brand}
+          href="/"
+          draggable={false}
+          onDragStart={(event) => event.preventDefault()}
+        >
           NociBlacK
         </a>
 
-        <nav className={styles.nav} aria-label="Navigation principale">
+        <nav
+          className={styles.nav}
+          aria-label="Navigation principale"
+          draggable={false}
+          onDragStart={(event) => event.preventDefault()}
+        >
           <a href="/">Accueil</a>
           <a href="#catalog">Articles</a>
           <a href="#contact">Contact</a>
@@ -31,7 +61,12 @@ export function HomePage() {
             accessoires soigneusement sélectionnés.
           </p>
 
-          <a className={styles.heroButton} href="#catalog">
+          <a
+            className={styles.heroButton}
+            href="#catalog"
+            draggable={false}
+            onDragStart={(event) => event.preventDefault()}
+          >
             Découvrir la collection
           </a>
         </section>
@@ -50,7 +85,11 @@ export function HomePage() {
             </p>
           </div>
 
-          <div className={styles.footerLinks}>
+          <div
+            className={styles.footerLinks}
+            draggable={false}
+            onDragStart={(event) => event.preventDefault()}
+          >
             <a href="/">Accueil</a>
             <a href="#catalog">Articles</a>
             <a href="#contact">Contact</a>
