@@ -1,4 +1,4 @@
-import { Link, useParams, useNavigate } from "react-router";
+import {useParams, useNavigate } from "react-router";
 
 import styles from "./ProductDetailPage.module.css";
 import { useProductDetail } from "../../../hooks/useProductDetail";
